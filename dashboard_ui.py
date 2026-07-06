@@ -157,6 +157,12 @@ INDEX_HTML = r"""<!DOCTYPE html>
   .sim h2{font-size:15px;margin:0 0 2px}.sim .sub{font-size:11px;color:var(--muted);margin-bottom:10px}
   .simgrid{display:flex;gap:16px;flex-wrap:wrap}
   .chartbox{flex:1;min-width:320px;position:relative}
+  .zoombtn{position:absolute;top:8px;right:10px;z-index:6;width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:7px;background:rgba(13,18,32,.85);color:var(--muted);cursor:pointer;font-size:13px;user-select:none}
+  .zoombtn:hover{color:#fff;border-color:#5aa9ff}
+  .chartmodal{position:fixed;inset:0;background:rgba(4,7,14,.93);z-index:1000;display:flex;align-items:center;justify-content:center;padding:14px;cursor:zoom-out}
+  .chartmodal-inner{width:min(1250px,100%)}
+  .chartmodal-inner svg{width:100%;height:auto;max-height:86vh;display:block}
+  .chartmodal-hint{text-align:center;color:#8a97ad;font-size:11px;margin-top:8px}
   svg.eq{width:100%;height:250px;background:rgba(5,8,18,.5);border:1px solid var(--line);border-radius:14px;display:block;touch-action:pan-y}
   #eqtip,#mom_tip,#bsk_tip,#voo_tip,#pny_tip,#dip_tip,#conf_tip,#fvLump_tip,#fvDca_tip{position:absolute;top:8px;pointer-events:none;background:rgba(9,12,24,.92);backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:10px;padding:6px 9px;font-size:11px;display:none;max-width:230px;line-height:1.4;z-index:5;box-shadow:0 8px 24px -8px rgba(0,0,0,.7)}
   .zbtn{cursor:pointer;font-size:10px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);transition:.15s;background:rgba(255,255,255,.03)}
@@ -247,7 +253,6 @@ INDEX_HTML = r"""<!DOCTYPE html>
   <div class="sim" id="momPanel"><div class="section-title">My Strategy to Beat the S&amp;P 500</div><div class="empty">Warming up…</div></div>
   <div class="sim" id="basketPanel"><div class="section-title">Momentum Basket</div><div class="empty">Warming up…</div></div>
   <div class="sim" id="vooPanel"><div class="section-title">S&amp;P 500 (VOO) Timing</div><div class="empty">Warming up…</div></div>
-  <div class="sim" id="simPanel"><div class="section-title">Strategy Simulator</div><div class="empty">Warming up…</div></div>
 </section>
 
 <section id="tab-radar" class="tabpane">
@@ -300,7 +305,7 @@ function render(){
   const rc=$('regimeChip');rc.className='regchip '+lab.replace(/[^A-Za-z]/g,'');
   rc.innerHTML=`${lab} ${mb>=0?'+':''}${mb.toFixed(2)}`+(d.event_risk>=0.4?' · ⚠ event':'');
   $('updated').textContent=d.updated_at_str.replace(' ET','');
-  renderCrashRadar();renderTopCalls();renderMovers();renderBubbles();renderDetail();renderLT();renderCrash();renderMacro();renderFutures();renderEvents();renderNews();renderResources();renderPicks();renderSignals();renderUnusual();renderInsider();renderConfSim();renderForever();renderSim();renderVooSim();renderMomSim();renderBasket();renderPenny();renderDip();
+  renderCrashRadar();renderTopCalls();renderMovers();renderBubbles();renderDetail();renderLT();renderCrash();renderMacro();renderFutures();renderEvents();renderNews();renderResources();renderPicks();renderSignals();renderUnusual();renderInsider();renderConfSim();renderForever();renderVooSim();renderMomSim();renderBasket();renderPenny();renderDip();
 }
 function renderMovers(){
   const m=st.data.movers||{losers:[],gainers:[]};
@@ -545,6 +550,20 @@ function renderUnusual(){
 }
 
 // ---- shared chart helpers for the simulators ----
+function expandChart(btn){
+  const host=btn.closest('.chartbox')||btn.parentElement;
+  const svg=host&&host.querySelector('svg');if(!svg)return;
+  const code=svg.outerHTML
+    .replace(/ on[a-z]+="[^"]*"/g,'')
+    .replace(/id="([^"]*)"/g,'id="zz_$1"')
+    .replace(/url\(#([^)]*)\)/g,'url(#zz_$1)')
+    .replace(/style="[^"]*"/,'style="width:100%;height:auto;max-height:86vh"');
+  const ov=document.createElement('div');
+  ov.className='chartmodal';
+  ov.onclick=()=>ov.remove();
+  ov.innerHTML='<div class="chartmodal-inner">'+code+'<div class="chartmodal-hint">tap anywhere to close</div></div>';
+  document.body.appendChild(ov);
+}
 function chartSVG(eq,bm,trades,dates,zoom,stratCol,id,ref){
   const n=eq.length,W=760,H=id?230:250,padL=48,padR=10,padTop=12,padBot=24;
   const hasRef=ref&&ref.length===n;
@@ -563,7 +582,7 @@ function chartSVG(eq,bm,trades,dates,zoom,stratCol,id,ref){
     +` ontouchstart="chartTouch(event,'${id||''}')" ontouchmove="chartTouch(event,'${id||''}')" ontouchend="chartTouchEnd(event,'${id||''}')" ontouchcancel="chartTouchEnd(event,'${id||''}')"`;
   const extra=`<line id="${id?id+'_guide':'eqguide'}" x1="0" y1="${padTop}" x2="0" y2="${H-padBot}" stroke="#f5a524" stroke-width="1" stroke-dasharray="2 3" style="display:none"/><circle id="${id?id+'_dot':'eqdot'}" r="4" fill="#fff" stroke="${stratCol}" stroke-width="2" style="display:none"/><line id="${id?id+'_guide2':'eqguide2'}" x1="0" y1="${padTop}" x2="0" y2="${H-padBot}" stroke="#f5a524" stroke-width="1" stroke-dasharray="2 3" style="display:none"/><circle id="${id?id+'_dot2':'eqdot2'}" r="4" fill="#fff" stroke="${stratCol}" stroke-width="2" style="display:none"/>`;
   const glow=`<polyline fill="none" stroke="${stratCol}" stroke-width="6" opacity="0.16" stroke-linejoin="round" stroke-linecap="round" points="${line(eq)}"/>`;
-  return `<svg class="eq"${hover} viewBox="0 0 ${W} ${H}" style="${id?'height:230px':''}">${defs}${yaxis}${xaxis}${area}${hasRef?`<polyline fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.85" stroke-linejoin="round" points="${line(ref)}"/>`:''}<polyline fill="none" stroke="#5a6675" stroke-width="1.6" opacity="0.9" stroke-linejoin="round" points="${line(bm)}"/>${glow}<polyline fill="none" stroke="${stratCol}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="${line(eq)}"/>${marks}${extra}</svg>`;
+  return `<svg class="eq"${hover} viewBox="0 0 ${W} ${H}" style="${id?'height:230px':''}">${defs}${yaxis}${xaxis}${area}${hasRef?`<polyline fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.85" stroke-linejoin="round" points="${line(ref)}"/>`:''}<polyline fill="none" stroke="#5a6675" stroke-width="1.6" opacity="0.9" stroke-linejoin="round" points="${line(bm)}"/>${glow}<polyline fill="none" stroke="${stratCol}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="${line(eq)}"/>${marks}${extra}</svg><div class="zoombtn" onclick="expandChart(this)" title="Enlarge">⛶</div>`;
 }
 function windowStats(eq,bm,dates){
   const n=eq.length,wStart=eq[0],wEnd=eq[n-1],bStart=bm[0],bEnd=bm[n-1];
@@ -1027,7 +1046,7 @@ function renderCrashRadar(){
    ${valBlock}
    ${durBlock}
    ${rec.available?`<div style="background:var(--panel2);border:1px solid var(--line);border-left:3px solid ${rec.curve_status==='inverted'?'#f85a6c':(rec.curve_status==='flat'?'#f5a524':'#22a36e')};border-radius:9px;padding:8px 11px;margin-bottom:9px;font-size:11.5px">🏛️ <b>Leading inputs right now:</b> 10y−3m curve <b style="color:${rec.curve_status==='inverted'?'#f85a6c':'#7fe0b0'}">${rec.curve>=0?'+':''}${rec.curve}% (${rec.curve_status})</b> · credit <b>${rec.credit_status}</b>${lf.breadth_mom!=null?` · breadth 3mo <b style="color:${lf.breadth_mom<0?'#f0a0a0':'#7fe0b0'}">${lf.breadth_mom>=0?'+':''}${lf.breadth_mom}%</b>`:''}${lf.vix_ts!=null?` · VIX term <b style="color:${lf.vix_ts<0?'#f0a0a0':'#7fe0b0'}">${lf.vix_ts>=0?'+':''}${lf.vix_ts}%</b>`:''}. ${rec.curve_status==='inverted'?'<b style="color:#f85a6c">Curve inverted</b> — the classic late-cycle warning; the model weighs it alongside the others.':'No curve inversion right now.'}</div>`:''}
-   <svg viewBox="0 0 ${W} ${Ht}" style="width:100%;height:225px;background:rgba(8,12,26,.5);border:1px solid var(--line);border-radius:10px;display:block">
+   <div style="position:relative"><div class="zoombtn" onclick="expandChart(this)" title="Enlarge">⛶</div><svg viewBox="0 0 ${W} ${Ht}" style="width:100%;height:225px;background:rgba(8,12,26,.5);border:1px solid var(--line);border-radius:10px;display:block">
      <defs><linearGradient id="cr_pgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5aa9ff" stop-opacity="0.22"/><stop offset="100%" stop-color="#5aa9ff" stop-opacity="0"/></linearGradient></defs>
      ${yax}${pax}
      <rect x="${nowx.toFixed(1)}" y="${padT}" width="${(W-padR-nowx).toFixed(1)}" height="${Ht-padB-padT}" fill="rgba(245,165,36,.05)"/>
@@ -1054,7 +1073,7 @@ function renderCrashRadar(){
      <line x1="${nowx.toFixed(1)}" y1="${padT}" x2="${nowx.toFixed(1)}" y2="${Ht-padB}" stroke="#f5a524" stroke-width="1" stroke-dasharray="3 3"/>
      <text x="${(nowx+3).toFixed(1)}" y="${padT+9}" font-size="9" fill="#f5a524">now · ${fmtMoney(last)}</text>
      <text x="${((nowx+ex)/2).toFixed(1)}" y="${Ht-7}" text-anchor="middle" font-size="9" fill="#8a97ad">↤ 6-month forecast ↦</text>
-     <text x="${padL}" y="${Ht-7}" font-size="9" fill="#8a97ad">${HD[0]}</text></svg>
+     <text x="${padL}" y="${Ht-7}" font-size="9" fill="#8a97ad">${HD[0]}</text></svg></div>
    <div class="lgd" style="margin:7px 2px 0"><span><i style="background:#5aa9ff"></i>S&amp;P 500 price</span><span><i style="background:#f5a524"></i>3-mo crash risk (right axis)</span><span><i style="background:#f85a6c"></i>downside path · 90% band</span><span><i style="background:#f5a524;opacity:.55"></i>now</span></div>
    <div style="font-size:11px;color:var(--muted);margin-top:6px">📈 The <b style="color:#f5a524">orange line</b> is the model's <b>3-month crash probability</b> (right axis, %) computed walk-forward — it <b>rises before</b> drawdowns, not during them. Watch it climb ahead of a selloff and fade once the drop is underway. Blue = S&P price.</div>
    <div style="font-size:10.5px;color:var(--muted);margin-top:7px">Right of the amber "now" line: <b style="color:#f85a6c">bold red</b> = the "if it rolls over" path, red zone = 90% range, dashed = a −10% crash; the 1‑ and 3‑month points are marked. <b>Confidence</b> = how stable each odds estimate is when the history is resampled (90% CI). <b>A leading gauge with real but noisy lead — it can't name the day or guarantee a crash.</b> Not advice.</div>
