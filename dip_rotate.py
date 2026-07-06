@@ -29,7 +29,7 @@ BASE = 10000.0
 DD = -0.05
 MAX_TRADES_YR = 5
 MAXP = 1100
-SCHEMA = 6   # bumped: RSI no longer NaN (excluding the name) after 14 straight up days
+SCHEMA = 7   # bumped: hindsight-universe warning surfaced in meta/UI
 
 
 def _clamp(x, lo, hi):
@@ -153,6 +153,10 @@ def backtest(voo, cc):
                               f"return to VOO when it recovers to a new high — capped at {MAX_TRADES_YR} trades/year."),
                  "benchmark": BENCH, "base": BASE, "schema": SCHEMA, "candidates": CANDS,
                  "max_trades_yr": MAX_TRADES_YR, "current_pick": stats["picked"], "pick_date": stats["pick_date"],
+                 "hindsight_note": ("The candidate list is TODAY'S 'Magnificent 7' — names everyone now "
+                                    "knows dominated the past decade — backtested over that same decade. "
+                                    "A list drawn up 10 years ago would have included losers too, and the "
+                                    "results would be far more muted."),
                  "state": state, "since": dts[0] if dts else None, "seeded_through": str(idx[-1].date()),
                  "updated": datetime.now(timezone.utc).isoformat(timespec="seconds")},
         "dates": dts, "equity": e2, "benchmark_equity": b2, "trades": trades,

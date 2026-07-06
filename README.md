@@ -7,7 +7,7 @@ A live, browser-based market dashboard that runs on your own machine:
 - **Unusual activity** flags for abnormal price moves and volume; **pre-market / after-hours** monitoring.
 - **Macro-, futures-, commodity-, and event-aware Buy / Sell / Hold signals** with a strength %, for a watchlist (incl. **IONQ**, IonQ) and a top-5 buy list.
 - **Live futures** (S&P/Nasdaq/Dow, crude, gas, gold, silver, copper), a **commodity supply/demand** read, an **event calendar** (FOMC, CPI, jobs, share-issuance/lockups), and a **best-effort news + war/geopolitical** flag.
-- **A $5,000 strategy simulator** that paper-trades the signals (holds the up-trend basket, rebalancing at each close), charting after-tax profit/loss vs **$5,000 left in the S&P 500 (SPY)**, with hover details showing exactly **what was bought and sold each day**.
+- **A $5,000 strategy simulator** that paper-trades the signals (holds the up-trend basket, rebalancing at each close), charting after-tax, after-slippage (10 bps per dollar traded) profit/loss vs **$5,000 left in the S&P 500 (SPY)**, with hover details showing exactly **what was bought and sold each day**. A dashed **control line** runs the identical rule on the 9 S&P sector ETFs — a fixed universe nobody cherry-picked — so you can see how much of the edge is hindsight stock-picking rather than the rule itself. Backtests with hand-picked universes carry **hindsight-selection warnings** in the UI.
 
 Data: **Yahoo Finance** via `yfinance` (free, no API key).
 

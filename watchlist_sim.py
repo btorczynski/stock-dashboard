@@ -57,7 +57,9 @@ CAL_K = 25.0           # shrinkage pseudocount: how much a band leans on the pri
 CAL_MIN = 60           # matured outcomes before the running base rate is trusted as prior
 BASE_PRIOR = 0.55      # bull-market base hit rate used as the prior until data accrues
 LOG_KEEP = 400          # cap on forward-log rows persisted
-SCHEMA = 3             # bumped: yearly reset to the S&P baseline (fresh race each year)
+SLIPPAGE_BPS = 10       # cost per dollar traded when the realistic line reweights
+SLIP = SLIPPAGE_BPS / 10000.0
+SCHEMA = 4             # bumped: 10 bps slippage charged on the realistic line's turnover
 
 # Confidence bands the calibration learns over. (lo, hi) on the 0-100 strength scale.
 BANDS = [(25, 40), (40, 55), (55, 70), (70, 85), (85, 101)]
@@ -238,6 +240,8 @@ def backtest(prices, tickers):
     dates, equity, bequity, perfect = [], [], [], []
     trades, daily_ret = [], []
     prev_buys = set()
+    prev_w = {}                     # yesterday's weights, for the slippage charge
+    slip_paid = 0.0
     invested_days = name_count = entered_total = 0
 
     for i in range(start_i, T):
@@ -275,6 +279,13 @@ def backtest(prices, tickers):
                 names = [cols[j] for j, _ in edges]
                 invested_days += 1
                 name_count += len(names)
+        # Slippage: SLIPPAGE_BPS on every dollar traded moving yesterday's weights
+        # to today's (going to cash counts — selling isn't free either).
+        traded = sum(abs(weights.get(t, 0.0) - prev_w.get(t, 0.0))
+                     for t in set(weights) | set(prev_w))
+        day_ret -= SLIP * traded
+        slip_paid += SLIP * traded * real_eq
+        prev_w = weights
         real_eq *= (1 + day_ret)
 
         # ---- "perfect (instant)" line: a computer, zero lag, raw strength-weighted ----
@@ -332,6 +343,7 @@ def backtest(prices, tickers):
     stats["perfect_total_pct"] = round((perfect[-1] / BASE - 1) * 100, 1)
     stats["realism_drag_pct"] = round(stats["perfect_total_pct"] - stats["total_return_pct"], 1)
     stats["calib_events"] = ov["n"]
+    stats["slippage_paid"] = round(slip_paid, 2)
 
     state = {
         "meta": {"strategy": ("Each day, act on the watchlist's BUY signals — but wait 1 trading day "
@@ -343,11 +355,18 @@ def backtest(prices, tickers):
                               "every year is a fresh head-to-head race against the index."),
                  "start_capital": BASE, "benchmark": BENCHMARK, "schema": SCHEMA,
                  "universe_size": len(closes), "signal_buy": SIGNAL_BUY, "exec_lag": EXEC_LAG,
+                 "slippage_bps": SLIPPAGE_BPS,
                  "since": dates[0], "seeded_through": str(idx[-1].date()),
                  "current_basket": basket,
                  "note": ("Price-only core of the live signal (no macro/event overlay). Executes 1 day "
                           "late; positions sized by calibrated win-probability learned walk-forward from "
-                          "matured outcomes only — so the sizing improves as the track record grows."),
+                          "matured outcomes only — so the sizing improves as the track record grows. "
+                          f"The realistic line pays {SLIPPAGE_BPS} bps on every dollar traded when it "
+                          "reweights (the dashed 'perfect' line stays cost-free by design)."),
+                 "hindsight_note": ("These are TODAY'S watchlist tickers backtested over the past 3 years "
+                                    "— a list that already includes recent winners. That selection alone "
+                                    "flatters the curve; the forward log accumulating from live calls is "
+                                    "the honest test."),
                  "updated": datetime.now(timezone.utc).isoformat(timespec="seconds")},
         "dates": dates, "equity": equity, "benchmark_equity": bequity, "perfect_equity": perfect,
         "trades": trades, "stats": stats, "calibration": calib,

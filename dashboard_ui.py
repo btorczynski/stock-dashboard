@@ -603,6 +603,7 @@ function renderSim(){
   if(!sim||!sim.dates||!sim.dates.length){box.innerHTML='<div class="section-title">Strategy Simulator</div><div class="empty">Warming up…</div>';return;}
   const meta=sim.meta||{},s=sim.stats||{},zoom=st.simZoom||'max';
   const v=sliceByZoom(sim,zoom);st.simView=v;const {dates,eq,bm,trades}=v,n=eq.length;
+  const nl=(sim.neutral_equity&&sim.neutral_equity.length===sim.dates.length)?sim.neutral_equity.slice(zoomCut(sim.dates,zoom)):null;
   const w=windowStats(eq,bm,dates);
   const stratCol=w.wRet>=w.wBRet?'#16a34a':'#f5a524';
   const zbt=z=>`<span class="zbtn ${zoom===z?'on':''}" onclick="setZoom('${z}')">${z.toUpperCase()}</span>`;
@@ -615,9 +616,10 @@ function renderSim(){
     <div class="sub">${meta.strategy||''} 🟢 added / 🔴 removed. Showing ${dates[0]} → ${dates[n-1]} (${w.wYrs.toFixed(1)}y window, log scale). Stats reflect the selected window.</div>
     ${sug}
     <div class="simgrid">
-      <div class="chartbox">${chartSVG(eq,bm,trades,dates,zoom,stratCol,'')}
+      <div class="chartbox">${chartSVG(eq,bm,trades,dates,zoom,stratCol,'',nl||undefined)}
         <div id="eqtip"></div>
-        <div class="lgd"><span><i style="background:${stratCol}"></i>Strategy after-tax ${fmtMoney(w.wEnd)} (${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%)</span>
+        <div class="lgd"><span><i style="background:${stratCol}"></i>Strategy after-tax & slippage ${fmtMoney(w.wEnd)} (${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%)</span>
+          ${nl?`<span><i style="background:#38bdf8"></i>Same rule, 9 sector ETFs (no stock-picking) ${fmtMoney(nl[nl.length-1])}</span>`:''}
           <span><i style="background:#5a6675"></i>S&P 500 (never sold) ${fmtMoney(w.bEnd)} (${w.wBRet>=0?'+':''}${w.wBRet.toFixed(1)}%)</span></div>
       </div>
       <div class="stats">
@@ -631,6 +633,7 @@ function renderSim(){
     </div>
     <table class="tr"><thead><tr><th>Date</th><th>P/L</th><th>🟢 Bought</th><th>🔴 Sold off</th></tr></thead><tbody>${trs}</tbody></table>
     ${cbNote}
+    ${meta.hindsight_note?`<div class="disc"><b style="color:var(--down)">Hindsight warning:</b> ${meta.hindsight_note}${s.neutral_return_pct!=null?` Over the full backtest the neutral-universe line made <b>${s.neutral_return_pct>=0?'+':''}${s.neutral_return_pct.toFixed(0)}%</b> vs the stock-picked <b>${s.total_return_pct>=0?'+':''}${(s.total_return_pct||0).toFixed(0)}%</b> and the S&P's <b>${s.benchmark_return_pct>=0?'+':''}${(s.benchmark_return_pct||0).toFixed(0)}%</b>.`:''}</div>`:''}
     <div class="disc">Mechanical backtest — not advice; past results don't predict the future.</div>`;
 }
 
@@ -720,7 +723,8 @@ function renderConfSim(){
       </div>
     </div>
     ${calBlock}
-    <div class="disc"><b>Read this honestly:</b> the <b>solid</b> line waits a full trading day before acting — you're not the <b>dashed "perfect" computer</b> that trades the signal's own close — and sizes each position by its <b>walk-forward calibrated</b> win-probability, learned only from outcomes already known at that date, so it sharpens as the record grows (that's the "${s.calib_events?s.calib_events.toLocaleString():''} graded calls" behind the table). The 1-day wait alone costs about ${Math.round(s.realism_drag_pct||0)} points of total return. The gap to the S&P is still inflated by <b>survivorship</b> (the watchlist is today's hand-picked winners) and untaxed, cost-free rebalancing. The honest core: raw confidence is only signal <i>strength</i> — its real hit-rate tops out near 60%, which is exactly why the sizing now leans on calibrated edge, not the raw %. Information only — not financial advice; past results don't predict the future.</div>`;
+    ${meta.hindsight_note?`<div class="disc"><b style="color:var(--down)">Hindsight warning:</b> ${meta.hindsight_note}</div>`:''}
+    <div class="disc"><b>Read this honestly:</b> the <b>solid</b> line waits a full trading day before acting — you're not the <b>dashed "perfect" computer</b> that trades the signal's own close — sizes each position by its <b>walk-forward calibrated</b> win-probability, learned only from outcomes already known at that date, so it sharpens as the record grows (that's the "${s.calib_events?s.calib_events.toLocaleString():''} graded calls" behind the table), and pays <b>${meta.slippage_bps||10} bps slippage</b> on every dollar it reweights${s.slippage_paid?` (~${fmtMoney(s.slippage_paid)} paid over the backtest)`:''}. The 1-day wait alone costs about ${Math.round(s.realism_drag_pct||0)} points of total return. The gap to the S&P is still inflated by <b>survivorship</b> (the watchlist is today's hand-picked winners) and untaxed gains. The honest core: raw confidence is only signal <i>strength</i> — its real hit-rate tops out near 60%, which is exactly why the sizing now leans on calibrated edge, not the raw %. Information only — not financial advice; past results don't predict the future.</div>`;
 }
 function setFvZoom(z){st.fvZoom=z;renderForever();}
 function renderForever(){
@@ -1100,6 +1104,7 @@ function renderDip(){
         <div class="stat"><div class="k">Max drawdown</div><div class="v" style="color:var(--down)">${w.wMdd.toFixed(1)}%</div></div>
       </div>
     </div>
+    ${meta.hindsight_note?`<div class="disc"><b style="color:var(--down)">Hindsight warning:</b> ${meta.hindsight_note}</div>`:''}
     <div class="disc"><b style="color:var(--down)">Reality check:</b> full backtest turned $10k into ${fmtMoney(s.value)} vs VOO's ${fmtMoney(s.benchmark_value)} — barely ahead, beating VOO in only ${s.years_beat}/${s.years_total} years with a ${s.max_drawdown_pct}% drawdown (VOO ${s.benchmark_dd_pct}%). It rotates VOO⇄stock on dips/recoveries but at most 5 trades a year, so while it's in one name it can ride it down hard (it held TSLA through the 2022 crash). Not advice.</div>`;
 }
 function renderInsider(){
