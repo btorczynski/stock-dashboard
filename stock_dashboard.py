@@ -32,6 +32,8 @@ import drift
 import crash_radar
 import watchlist_levels
 import forever_hold
+import signal_calibration
+import fundamentals
 
 # --------------------------------------------------------------------------
 # Configuration
@@ -568,7 +570,44 @@ def build_snapshot():
         print(f"[warn] watchlist levels failed: {e}", flush=True)
     for w in watchlist:                       # long-term discipline: boost compounders,
         apply_lt_discipline(w)                # damp overextended names (pullback guard)
+    # calibrated confidence: replace "strength" as the headline confidence with the
+    # historical hit-rate of the signal's own band (see signal_calibration.py)
+    calib_state = None
+    try:
+        calib_state = signal_calibration.ensure(daily, WL_TICKERS)
+        for w in watchlist:
+            s = w.get("signal") or {}
+            t = w.get("ticker") or w.get("proxy")
+            if t and s.get("action") in ("BUY", "SELL", "HOLD"):
+                s.update(signal_calibration.annotate(calib_state, t, s.get("score", 0), s["action"]))
+    except Exception as e:
+        print(f"[warn] signal calibration failed: {e}", flush=True)
+    # crash-risk + fundamentals + Street-consensus overlay on the calibrated
+    # confidence (see fundamentals.py). Radar odds come from the previous
+    # refresh's cached state — slow-moving, so a one-cycle lag is fine.
+    fund_state = None
+    try:
+        fund_state = fundamentals.ensure(daily, sorted(set(WL_TICKERS) | set(PICKS_UNIVERSE)))
+        _radar_h1 = ((crash_radar.load_state() or {}).get("h1") or {}).get("prob")
+        for w in watchlist:
+            s = w.get("signal") or {}
+            t = w.get("ticker") or w.get("proxy")
+            f = ((fund_state or {}).get("tickers") or {}).get(t)
+            if t and s.get("conf_pct") is not None:
+                fundamentals.apply(s, f, crash.get("score"), _radar_h1)
+            if f:
+                w["fund"] = f
+    except Exception as e:
+        print(f"[warn] fundamentals overlay failed: {e}", flush=True)
     picks = rank_picks(now_et, M, daily, market_bias, commod, event_risk, sec_health)
+    if calib_state:
+        _radar_h1 = ((crash_radar.load_state() or {}).get("h1") or {}).get("prob")
+        for p in picks:                        # pooled-band fallback for non-watchlist names
+            if p.get("action") in ("BUY", "SELL", "HOLD"):
+                p.update(signal_calibration.annotate(calib_state, p.get("symbol"), p.get("score", 0), p["action"]))
+                if p.get("conf_pct") is not None:
+                    fundamentals.apply(p, ((fund_state or {}).get("tickers") or {}).get(p.get("symbol")),
+                                       crash.get("score"), _radar_h1)
     try:
         top_calls_state = top_calls.compute(picks, watchlist, daily)
     except Exception as e:
@@ -603,6 +642,7 @@ def build_snapshot():
         "market_bias": market_bias, "event_risk": event_risk,
         "sectors": sectors, "unusual": unusual, "movers": movers,
         "watchlist": watchlist, "picks": picks, "sim": sim_state, "top_calls": top_calls_state,
+        "calibration": (calib_state or {}).get("meta"),
         "insiders": insider_state,
         "forever_hold": forever_state,
     }

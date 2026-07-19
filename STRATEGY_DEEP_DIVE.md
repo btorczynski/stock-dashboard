@@ -59,6 +59,17 @@ All other sleeves (VOO timing, momentum ×2, watchlist confidence, dip-rotate, p
 - The deeper drawdown (−46.6% vs SPY's −33.7%) is the price of concentration in tech/semis — the current memory bear is being felt in full. Never-sell means riding it; the strategy's history says that has been the right trade 11 years out of 14, but nothing guarantees it.
 - Not financial advice; a backtest is not a promise.
 
+## 5. Calibrated confidence (July 19 upgrade)
+
+The old "confidence" was |score| — signal strength dressed up as a percentage. It is now a four-stage probability:
+
+1. **Calibration** (`signal_calibration.py`): the price-only v2 score is reconstructed over each name's ~10 years, every day is bucketed into a band (strong_sell → strong_buy), and each band is graded by its actual forward hit-rate (21-day headline; 1-year feeds the forever-hold entry blend). Thin bands shrink toward the pooled watchlist rate (empirical Bayes, M0=60). This immediately exposed an asymmetry the old number hid: SELL bands on long-run compounders were near coin-flips at 1 month (MU strong_sell: 54% of the time it was *higher* a month later, +57% avg the following year) while trend-aligned BUYs graded 70%+.
+2. **Crash-risk weighting** (`fundamentals.py`): elevated index-level crash gauges (factors score above "Low", or Crash Radar 1-month odds above base) strip up to 12 pts from bullish confidence and add up to 8 to bearish.
+3. **Fundamentals tilt**: revenue YoY growth, profit margin, earnings growth, and ROE combine into a 0-100 quality score (standard quant "quality" construction, Yahoo Finance data, cached daily); it moves confidence up to ±8 pts — good businesses damp SELL confidence, deteriorating ones damp BUYs.
+4. **Street anchor**: analyst consensus (recommendation mean × coverage) maps to a 0-100 anchor; when ≥4 analysts cover a name, our confidence is blended 75/25 toward it and clamped within ±20 pts — the number can disagree with "what other places rank," but never wildly.
+
+Verified Jul 17 close: MU SELL conf 46% → 31% (fundamentals −8, Street strong_buy ×42 → −9), AAPL BUY 62% → 68%, ETFs get the crash leg only. The forever-hold "Buy now?" live leg now uses the calibrated 1mo/1yr band up-odds, with a falling-knife cap (🔪): a name whose fast-crash flag is firing can't read Accumulate until the flag clears. The UI shows the full breakdown on hover.
+
 ## Sources
 
 - [Yahoo Finance — Micron, Samsung, SK Hynix drag memory stocks into a bear market](https://finance.yahoo.com/markets/article/micron-samsung-sk-hynix-just-dragged-memory-stocks-into-a-bear-market-154549356.html)
