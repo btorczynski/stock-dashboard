@@ -26,16 +26,10 @@ from flask import Flask, Response
 
 import simulator as sim
 import factors
-import voo_sim
-import momentum_sim
-import momentum_basket
 import insider
-import penny_hold
 import top_calls
 import drift
-import dip_rotate
 import crash_radar
-import watchlist_sim
 import watchlist_levels
 import forever_hold
 
@@ -296,9 +290,29 @@ def compute_macro(macro_daily):
     return r
 
 
-def compute_signal(daily, intra_m, ext_bias=0.0, event_risk=0.0):
+def compute_signal(daily, intra_m, ext_bias=0.0, event_risk=0.0, sector_dd=None):
+    """Buy/Sell/Hold signal v2 — crash-aware.
+
+    On top of the original composite (trend, cross, momentum, RSI, today's move,
+    macro bias), v2 folds in the industry-standard downside guards that the July
+    2026 memory-stock crash exposed as missing:
+      • 200-day trend filter (Faber): no BUY below the 200-day average — the single
+        best-documented crash-avoidance rule in the literature.
+      • 52-week-high drawdown (absolute momentum): a name 10-20% off its high is in
+        a correction (penalty), 20%+ is in a bear market (hard penalty + BUY cap).
+      • Fast-crash override: a −12%/10-day or −18%/21-day slide forces SELL even
+        if slower averages haven't rolled over yet — this is what a 2-3 week sector
+        rout looks like in real time.
+      • Volatility-spike guard (vol targeting): 10-day vol ≥ 1.8× its 3-month norm
+        damps bullish conviction.
+      • Sector-crash overlay: if the name's sector/industry ETF is itself 15%+ off
+        its high, members can't be BUYs and lose points (crashes cluster by sector).
+      • The event dampener now shrinks only BULLISH conviction — it no longer pulls
+        a crashing name back toward HOLD.
+    """
     out={"action":"N/A","strength":0,"score":0,"rsi":None,"sma_state":None,"mom1m":None,"reasons":[],"note":None,
-         "price":None,"change_pct":None,"ext_change_pct":None,"ext_kind":None}
+         "price":None,"change_pct":None,"ext_change_pct":None,"ext_kind":None,
+         "off_high_pct":None,"vs200_pct":None,"crash_flag":None}
     rvol=None
     if intra_m:
         out.update({"price":intra_m.get("price"),"change_pct":intra_m.get("change_pct"),"ext_change_pct":intra_m.get("ext_change_pct"),"ext_kind":intra_m.get("ext_kind")}); rvol=intra_m.get("rvol")
@@ -308,24 +322,95 @@ def compute_signal(daily, intra_m, ext_bias=0.0, event_risk=0.0):
     price=out["price"] or _safe_float(closes.iloc[-1]); out["price"]=round(price,2) if price else None
     if out["change_pct"] is None and len(closes)>=2: out["change_pct"]=round((closes.iloc[-1]/closes.iloc[-2]-1)*100,2)
     sma20=float(closes.tail(20).mean()); sma50=float(closes.tail(50).mean()) if len(closes)>=50 else float(closes.mean())
+    sma200=float(closes.tail(200).mean()) if len(closes)>=180 else None
+    hi52=float(closes.tail(252).max())
     rsi=float(_rsi(closes).iloc[-1]) if len(closes)>15 else 50.0
     n=min(21,len(closes)-1); mom1m=(price/float(closes.iloc[-1-n])-1)*100 if n>0 and price else 0.0
+    n10=min(10,len(closes)-1); ret10=(price/float(closes.iloc[-1-n10])-1)*100 if n10>0 and price else 0.0
+    rets=closes.pct_change().dropna()
+    vol10=float(rets.tail(10).std()) if len(rets)>=10 else None
+    vol63=float(rets.tail(63).std()) if len(rets)>=40 else None
+    off_high=(price/hi52-1)*100 if price and hi52 else 0.0
     out["rsi"],out["mom1m"]=round(rsi,1),round(mom1m,1); out["sma_state"]="above" if price and price>sma50 else "below"
+    out["off_high_pct"]=round(off_high,1)
+    if sma200 and price: out["vs200_pct"]=round((price/sma200-1)*100,1)
     if len(closes)<30: out["note"]="Limited history"
     c_trend=1.0 if (price and price>sma50) else -1.0; c_cross=1.0 if sma20>sma50 else -1.0
     c_mom=_clamp(mom1m/10.0,-1,1); c_rsi=_clamp((rsi-50.0)/20.0,-1,1); c_today=_clamp((out["change_pct"] or 0)/3.0,-1,1)
     tech=30*c_trend+20*c_cross+25*c_mom+15*c_rsi+10*c_today
     raw=_clamp(tech+ext_bias*MACRO_WEIGHT,-100,100)
-    raw=raw*(1-0.35*_clamp(event_risk,0,1))     # dampen conviction near big events
-    score=int(round(raw)); out["score"]=score; out["strength"]=abs(score)
-    out["action"]="BUY" if score>=SIGNAL_BUY else ("SELL" if score<=SIGNAL_SELL else "HOLD")
     reasons=[("Above" if (price and price>sma50) else "Below")+" 50-day avg","20d>50d" if sma20>sma50 else "20d<50d",f"1mo {mom1m:+.1f}%",f"RSI {rsi:.0f}"]
+    # --- crash-aware guards (v2) --------------------------------------
+    crash_flag=None
+    if off_high<=-20:
+        raw-=25; crash_flag="bear"; reasons.append(f"bear market: {off_high:.0f}% off 52w high")
+    elif off_high<=-10:
+        raw-=12; crash_flag="correction"; reasons.append(f"correction: {off_high:.0f}% off 52w high")
+    if sma200 is not None and price and price<sma200:
+        raw=min(raw-10,SIGNAL_BUY-1)            # Faber trend filter: never BUY below the 200-day
+        reasons.append("below 200-day avg — no new buys")
+    if vol10 and vol63 and vol63>0 and vol10/vol63>=1.8 and raw>0:
+        raw*=0.6; reasons.append(f"vol spike {vol10/vol63:.1f}x")
+    if sector_dd is not None and sector_dd<=-15:
+        raw=min(raw-10,SIGNAL_BUY-1)
+        crash_flag=crash_flag or "sector"
+        reasons.append(f"sector in drawdown ({sector_dd:.0f}% off high)")
+    if raw>0:
+        raw=raw*(1-0.35*_clamp(event_risk,0,1))  # dampen only bullish conviction near big events
+    if ret10<=-12 or mom1m<=-18:
+        raw=min(raw,-40); crash_flag="crash"
+        reasons.append(f"fast drawdown: {ret10:+.0f}% in 10d / {mom1m:+.0f}% in 1mo — exit signal")
+    raw=_clamp(raw,-100,100)
+    score=int(round(raw)); out["score"]=score; out["strength"]=abs(score); out["crash_flag"]=crash_flag
+    out["action"]="BUY" if score>=SIGNAL_BUY else ("SELL" if score<=SIGNAL_SELL else "HOLD")
     if rsi>=70: reasons.append("overbought")
     elif rsi<=30: reasons.append("oversold")
     if rvol and rvol>=2: reasons.append(f"vol {rvol:.1f}x")
     if abs(ext_bias)>=0.1: reasons.append(f"macro {'+' if ext_bias>0 else '−'}")
     if event_risk>=0.4: reasons.append("event risk")
     out["reasons"]=reasons; return out
+
+
+# Industry/theme ETFs used for the sector-crash overlay: crashes cluster by
+# industry (July 2026: memory/semis), so each name is checked against the most
+# specific ETF that covers it, not just its broad S&P sector.
+INDUSTRY_ETF = {
+    "NVDA":"SMH","AMD":"SMH","AVGO":"SMH","MU":"SMH","KLAC":"SMH","WDC":"SMH",
+    "SNDK":"SMH","STX":"SMH","SOXX":"SMH","SMH":"SMH",
+}
+SECTOR_ETF_OF = {name: etf for etf, v in SECTORS.items() for name in [v["name"]]}
+
+
+def sector_health(daily):
+    """Drawdown/trend read for every sector + industry ETF: % off 52-week high,
+    vs 200-day, 1-month return, and a status (ok / pullback / correction / bear).
+    This is the sector-level crash detector the S&P-only radar was missing."""
+    out={}
+    for etf in list(SECTORS.keys())+["SMH","SOXX"]:
+        df=daily.get(etf)
+        if df is None or df.empty: continue
+        c=df["Close"].dropna()
+        if len(c)<60: continue
+        px=float(c.iloc[-1]); hi=float(c.tail(252).max())
+        off=(px/hi-1)*100
+        sma200=float(c.tail(200).mean()) if len(c)>=180 else None
+        n=min(21,len(c)-1); m1=(px/float(c.iloc[-1-n])-1)*100
+        status="ok"
+        if off<=-30: status="crash"
+        elif off<=-20: status="bear"
+        elif off<=-10: status="correction"
+        elif off<=-5: status="pullback"
+        out[etf]={"name":(SECTORS.get(etf) or {}).get("name") or {"SMH":"Semiconductors","SOXX":"Semiconductors"}.get(etf,etf),
+                  "off_high_pct":round(off,1),"mom1m_pct":round(m1,1),
+                  "below_200d":bool(sma200 and px<sma200),"status":status}
+    return out
+
+
+def _sector_dd_for(sym, sec_health):
+    """Most specific ETF drawdown covering `sym` (industry first, then S&P sector)."""
+    etf=INDUSTRY_ETF.get(sym) or SECTOR_ETF_OF.get(sector_of(sym))
+    h=sec_health.get(etf) if etf else None
+    return h["off_high_pct"] if h else None
 
 
 def apply_lt_discipline(w):
@@ -376,25 +461,31 @@ def apply_lt_discipline(w):
         if px and sell_lv and px >= sell_lv:
             damp *= 0.75; rs.append("above typical 3-mo target — wait for dip")
         score *= max(damp, 0.20)   # flags stack; several at once forces HOLD
+    # crash guard: the quality boost above must never lift a name whose own chart
+    # (or sector) is in a bear/crash regime back into BUY territory
+    if s.get("crash_flag") in ("bear", "crash", "sector"):
+        score = min(score, SIGNAL_BUY - 1)
     sc = int(round(_clamp(score, -100, 100)))
     s["score"] = sc; s["strength"] = abs(sc)
     s["action"] = "BUY" if sc >= SIGNAL_BUY else ("SELL" if sc <= SIGNAL_SELL else "HOLD")
 
 
-def build_watchlist(now_et, M, daily, market_bias, event_risk):
+def build_watchlist(now_et, M, daily, market_bias, event_risk, sec_health=None):
     items=[]
+    sh=sec_health or {}
     for w in WATCHLIST:
         t=w["ticker"] or w.get("proxy")
-        sig=compute_signal(daily.get(t),M(t),market_bias,event_risk) if t else {"action":"N/A","strength":0,"reasons":[],"note":"Not publicly traded"}
+        sig=compute_signal(daily.get(t),M(t),market_bias,event_risk,_sector_dd_for(t,sh)) if t else {"action":"N/A","strength":0,"reasons":[],"note":"Not publicly traded"}
         items.append({"label":w["label"],"ticker":w["ticker"],"note":w.get("note"),"private":w["ticker"] is None,"proxy":w.get("proxy"),"signal":sig})
     return items
 
 
-def rank_picks(now_et, M, daily, market_bias, commod, event_risk, top=5):
+def rank_picks(now_et, M, daily, market_bias, commod, event_risk, sec_health=None, top=5):
     scored=[]
+    sh=sec_health or {}
     for s in PICKS_UNIVERSE:
         sec=sector_of(s); ext=_clamp(market_bias+factors.sector_tilt(commod,sec),-1,1)
-        sig=compute_signal(daily.get(s),M(s),ext,event_risk)
+        sig=compute_signal(daily.get(s),M(s),ext,event_risk,_sector_dd_for(s,sh))
         if sig["action"]=="N/A" or sig["price"] is None: continue
         scored.append({"symbol":s,"sector":sec,"action":sig["action"],"score":sig["score"],"strength":sig["strength"],
                        "price":sig["price"],"change_pct":sig["change_pct"],"rsi":sig["rsi"],"mom1m":sig["mom1m"],"reasons":sig["reasons"]})
@@ -417,7 +508,9 @@ def build_movers(M):
 # --------------------------------------------------------------------------
 def build_snapshot():
     now_et = datetime.now(ET); sess = market_session(now_et)
-    daily, intra = fetch_all(UNIVERSE, daily_period="6mo")
+    # 1y history (was 6mo): the 200-day trend filter and 52-week-high drawdown
+    # guards in compute_signal v2 need a full year of daily closes.
+    daily, intra = fetch_all(UNIVERSE, daily_period="1y")
 
     _mc = {}
     def M(sym):
@@ -459,7 +552,8 @@ def build_snapshot():
     unusual.sort(key=lambda x: x["score"], reverse=True)
 
     movers = build_movers(M)
-    watchlist = build_watchlist(now_et, M, daily, market_bias, event_risk)
+    sec_health = sector_health(daily)
+    watchlist = build_watchlist(now_et, M, daily, market_bias, event_risk, sec_health)
     try:
         drift_tags = drift.ensure(WL_TICKERS, daily).get("tags", {})
         for w in watchlist:
@@ -474,7 +568,7 @@ def build_snapshot():
         print(f"[warn] watchlist levels failed: {e}", flush=True)
     for w in watchlist:                       # long-term discipline: boost compounders,
         apply_lt_discipline(w)                # damp overextended names (pullback guard)
-    picks = rank_picks(now_et, M, daily, market_bias, commod, event_risk)
+    picks = rank_picks(now_et, M, daily, market_bias, commod, event_risk, sec_health)
     try:
         top_calls_state = top_calls.compute(picks, watchlist, daily)
     except Exception as e:
@@ -484,33 +578,9 @@ def build_snapshot():
     except Exception as e:
         print(f"[warn] simulator failed: {e}", flush=True); sim_state = sim.load_state() or {}
     try:
-        voo_state = voo_sim.ensure(daily)
-    except Exception as e:
-        print(f"[warn] voo sim failed: {e}", flush=True); voo_state = voo_sim.load_state() or {}
-    try:
-        momentum_state = momentum_sim.ensure(daily)
-    except Exception as e:
-        print(f"[warn] momentum sim failed: {e}", flush=True); momentum_state = momentum_sim.load_state() or {}
-    try:
-        basket_state = momentum_basket.ensure(daily)
-    except Exception as e:
-        print(f"[warn] basket sim failed: {e}", flush=True); basket_state = momentum_basket.load_state() or {}
-    try:
         insider_state = insider.ensure(WL_TICKERS, daily)
     except Exception as e:
         print(f"[warn] insider failed: {e}", flush=True); insider_state = insider.load_state() or {}
-    try:
-        penny_state = penny_hold.ensure(daily)
-    except Exception as e:
-        print(f"[warn] penny sleeve failed: {e}", flush=True); penny_state = penny_hold.load_state() or {}
-    try:
-        dip_state = dip_rotate.ensure(daily)
-    except Exception as e:
-        print(f"[warn] dip rotate failed: {e}", flush=True); dip_state = dip_rotate.load_state() or {}
-    try:
-        wl_sim_state = watchlist_sim.ensure(daily, WL_TICKERS, watchlist)
-    except Exception as e:
-        print(f"[warn] watchlist sim failed: {e}", flush=True); wl_sim_state = watchlist_sim.load_state() or {}
     try:
         forever_state = forever_hold.ensure(daily, watchlist)
     except Exception as e:
@@ -529,15 +599,11 @@ def build_snapshot():
         "thresholds": {"price_pct": PRICE_PCT_THRESHOLD, "rvol": RVOL_THRESHOLD},
         "breadth": {"up": up, "down": down, "total": len(SECTORS)},
         "macro": macro, "futures": futures, "commodities": commod, "calendar": calendar, "news": news,
-        "crash_risk": crash, "crash_radar": cradar_state, "market_bias": market_bias, "event_risk": event_risk,
+        "crash_risk": crash, "crash_radar": cradar_state, "sector_health": sec_health,
+        "market_bias": market_bias, "event_risk": event_risk,
         "sectors": sectors, "unusual": unusual, "movers": movers,
-        "watchlist": watchlist, "picks": picks, "sim": sim_state, "voo_sim": voo_state, "top_calls": top_calls_state,
-        "momentum_sim": momentum_state,
-        "momentum_basket": basket_state,
+        "watchlist": watchlist, "picks": picks, "sim": sim_state, "top_calls": top_calls_state,
         "insiders": insider_state,
-        "penny_hold": penny_state,
-        "dip_rotate": dip_state,
-        "watchlist_sim": wl_sim_state,
         "forever_hold": forever_state,
     }
 

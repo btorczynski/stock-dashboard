@@ -199,7 +199,7 @@ INDEX_HTML = r"""<!DOCTYPE html>
   <nav class="tabs" id="tabs">
     <button class="tabbtn on" data-tab="tab-market">🫧 Market</button>
     <button class="tabbtn" data-tab="tab-signals">🎯 Signals</button>
-    <button class="tabbtn" data-tab="tab-strategies">📊 Strategies</button>
+    <button class="tabbtn" data-tab="tab-strategies">📊 Strategy</button>
     <button class="tabbtn" data-tab="tab-radar">🛰️ Radar</button>
   </nav>
   <span class="grow"></span>
@@ -246,13 +246,6 @@ INDEX_HTML = r"""<!DOCTYPE html>
 
 <section id="tab-strategies" class="tabpane">
   <div class="sim" id="foreverPanel"><div class="section-title">💎 Buy &amp; Hold Forever — watchlist's durable names, never timed</div><div class="empty">Warming up… (first build fetches full history)</div></div>
-  <div class="sim" id="confPanel"><div class="section-title">🎯 Watchlist Confidence Backtest — predicted vs actual</div><div class="empty">Warming up… (first build fetches ~3y of history)</div></div>
-  <div class="section-title ranked">📊 Strategies — ranked by backtested return (best → worst)</div>
-  <div class="sim" id="pennyPanel"><div class="section-title">$500 Penny Sleeve</div><div class="empty">Warming up…</div></div>
-  <div class="sim" id="dipPanel"><div class="section-title">VOO Dip → Best Mega-Cap</div><div class="empty">Warming up…</div></div>
-  <div class="sim" id="momPanel"><div class="section-title">My Strategy to Beat the S&amp;P 500</div><div class="empty">Warming up…</div></div>
-  <div class="sim" id="basketPanel"><div class="section-title">Momentum Basket</div><div class="empty">Warming up…</div></div>
-  <div class="sim" id="vooPanel"><div class="section-title">S&amp;P 500 (VOO) Timing</div><div class="empty">Warming up…</div></div>
 </section>
 
 <section id="tab-radar" class="tabpane">
@@ -305,7 +298,7 @@ function render(){
   const rc=$('regimeChip');rc.className='regchip '+lab.replace(/[^A-Za-z]/g,'');
   rc.innerHTML=`${lab} ${mb>=0?'+':''}${mb.toFixed(2)}`+(d.event_risk>=0.4?' · ⚠ event':'');
   $('updated').textContent=d.updated_at_str.replace(' ET','');
-  renderCrashRadar();renderTopCalls();renderMovers();renderBubbles();renderDetail();renderLT();renderCrash();renderMacro();renderFutures();renderEvents();renderNews();renderResources();renderPicks();renderSignals();renderUnusual();renderInsider();renderConfSim();renderForever();renderVooSim();renderMomSim();renderBasket();renderPenny();renderDip();
+  renderCrashRadar();renderTopCalls();renderMovers();renderBubbles();renderDetail();renderLT();renderCrash();renderMacro();renderFutures();renderEvents();renderNews();renderResources();renderPicks();renderSignals();renderUnusual();renderInsider();renderForever();
 }
 function renderMovers(){
   const m=st.data.movers||{losers:[],gainers:[]};
@@ -656,95 +649,7 @@ function renderSim(){
     <div class="disc">Mechanical backtest — not advice; past results don't predict the future.</div>`;
 }
 
-function setVooZoom(z){st.vooZoom=z;renderVooSim();}
-function renderVooSim(){
-  const vs=st.data&&st.data.voo_sim,box=$('vooPanel');
-  if(!vs||!vs.dates||!vs.dates.length){box.innerHTML='<div class="section-title">Buy-the-Dip (VOO)</div><div class="empty">Warming up…</div>';return;}
-  const meta=vs.meta||{},s=vs.stats||{},zoom=st.vooZoom||'max';
-  const v=sliceByZoom(vs,zoom);st.views=st.views||{};st.views.voo=v;const {dates,eq,bm,trades}=v,n=eq.length;
-  const W=(vs.price&&vs.shares&&vs.invested)?vooWindowStats(vs,zoom):null;
-  const lump=W?W.vsLump:(s.value-s.benchmark_equity);
-  const stratCol=lump>=0?'#16a34a':'#f5a524';
-  const val=W?W.valueEnd:s.value,bval=W?W.benchEnd:s.benchmark_equity,roi=W?W.roi:s.roi_pct,broi=W?W.bRoi:s.benchmark_roi_pct;
-  const inv=W?W.invWin:s.invested,prof=W?W.gain:s.profit,vret=W?W.vRet:null;
-  const dd=W?W.ddPct:s.voo_drawdown_pct,yrs=W?W.years:s.years,buysW=W?W.shWin:s.shares,cad=W?W.dipsPerMo:s.avg_dips_per_month;
-  const zbt=z=>`<span class="zbtn ${zoom===z?'on':''}" onclick="setVooZoom('${z}')">${z.toUpperCase()}</span>`;
-  const rec=(vs.recommendation||[]).map(r=>{const ac=r.action.indexOf('BUY')>=0?'var(--buy)':(r.action.indexOf('WAIT')>=0?'var(--hold)':'var(--accent)');
-    return `<div style="flex:1;min-width:155px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 10px;border-left:3px solid ${ac}"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">${r.horizon}</div><div style="font-weight:800;color:${ac};font-size:13px;margin:2px 0">${r.action} · $${r.price}</div><div style="font-size:10px;color:var(--muted);line-height:1.35">${r.note}</div></div>`;}).join('');
-  const dn=recNext(vs.recommendation);
-  box.innerHTML=`${dn}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div class="section-title" style="margin:0">Buy-the-Dip (VOO) — 1 share every ${meta.dip_pct||2}% drop</div><div style="display:flex;gap:5px;flex-wrap:wrap">${zbt('6m')}${zbt('ytd')}${zbt('1y')}${zbt('5y')}${zbt('10y')}${zbt('max')}</div></div>
-    <div class="sub">${meta.strategy||''} Showing ${dates[0]} → ${dates[n-1]} (${(+yrs).toFixed(1)}y window): ${buysW} buys (~${(+cad).toFixed(1)}/mo). 🟢 = a dip-buy. Stats reflect the selected window.</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px">${rec}</div>
-    <div class="simgrid">
-      <div class="chartbox">${chartSVG(eq,bm,trades,dates,zoom,stratCol,'voo')}
-        <div id="voo_tip"></div>
-        <div class="lgd"><span><i style="background:${stratCol}"></i>Buy-the-dip ${fmtMoney(val)} (ROI ${roi>=0?'+':''}${(+roi).toFixed(1)}%)</span>
-          <span><i style="background:#5a6675"></i>Same $, lump at year-start ${fmtMoney(bval)} (ROI ${broi>=0?'+':''}${(+broi).toFixed(1)}%)</span></div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="k">VOO return (window)</div><div class="v" style="color:${(vret==null?0:vret)>=0?'var(--up)':'var(--down)'}">${vret==null?'—':(vret>=0?'+':'')+vret.toFixed(1)+'%'}</div></div>
-        <div class="stat"><div class="k">Invested (window)</div><div class="v">${fmtMoney(inv)}</div></div>
-        <div class="stat"><div class="k">Gain net of buys</div><div class="v" style="color:${prof>=0?'var(--up)':'var(--down)'}">${money(prof)}</div></div>
-        <div class="stat"><div class="k">vs lump-sum</div><div class="v" style="color:${lump>=0?'var(--up)':'var(--down)'}">${money(lump)}</div></div>
-        <div class="stat"><div class="k">ROI (window)</div><div class="v">${(+roi).toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">VOO drawdown</div><div class="v" style="color:var(--down)">${(+dd).toFixed(1)}%</div></div>
-      </div>
-    </div>
-    <div class="disc">Both lines deploy the same dollars in the visible window — the dip line spreads them onto ${meta.dip_pct||2}% down-days, the benchmark invests up front. "Gain net of buys" strips out the cash you added, so it's the real growth of the holdings; "vs lump-sum" is how much dip-timing beat (or trailed) deploying the same dollars at the start. Not advice.</div>`;
-}
 
-function setConfZoom(z){st.confZoom=z;renderConfSim();}
-function renderConfSim(){
-  const cs=st.data&&st.data.watchlist_sim,box=$('confPanel');
-  if(!cs||!cs.dates||!cs.dates.length){box.innerHTML='<div class="section-title">🎯 Watchlist Confidence Backtest — predicted vs actual</div><div class="empty">Warming up… (first build fetches ~3y of history)</div>';return;}
-  const meta=cs.meta||{},s=cs.stats||{},cal=cs.calibration||{},zoom=st.confZoom||'max';
-  const v=sliceByZoom(cs,zoom);st.views=st.views||{};st.views.conf=v;const {dates,eq,bm,trades}=v,n=eq.length;
-  const ref=(cs.perfect_equity||[]).slice(zoomCut(cs.dates,zoom));
-  const w=windowStats(eq,bm,dates);
-  const stratCol=w.wRet>=w.wBRet?'#16a34a':'#f5a524';
-  const zbt=z=>`<span class="zbtn ${zoom===z?'on':''}" onclick="setConfZoom('${z}')">${z.toUpperCase()}</span>`;
-  const basket=(meta.current_basket||[]);
-  const chips=basket.slice(0,10).map(b=>`<span style="font-size:11px;padding:4px 9px;border-radius:8px;border:1px solid var(--buy);background:rgba(22,163,74,.14)"><b>${b.symbol}</b> <span style="color:var(--muted)">${b.weight_pct}%</span> · <span style="color:#9fe0b0">raw ${b.confidence}% → <b>cal ${b.calibrated!=null?b.calibrated+'%':'—'}</b></span></span>`).join('');
-  const basketBlock=basket.length?`<div style="margin:2px 0 6px;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Today's basket — ${basket.length} names, sized by CALIBRATED edge (acting 1 day after the signal). raw = signal strength · cal = what that strength has actually been worth</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">${chips}</div>`:`<div class="sub">No name has a positive calibrated edge right now — the strategy would be sitting in cash today.</div>`;
-  const life=`<div style="display:flex;flex-wrap:wrap;gap:7px;margin:8px 0 4px">
-    ${lifeChip('$5k →',fmtMoney(s.value),'a computer '+fmtMoney(s.perfect_value),s.value>=s.benchmark_value)}
-    ${lifeChip('CAGR',s.cagr_pct+'%','S&P '+s.benchmark_cagr_pct+'%',s.cagr_pct>=s.benchmark_cagr_pct)}
-    ${lifeChip('Total return',fmtPctInt(s.total_return_pct),'S&P '+fmtPctInt(s.benchmark_total_pct),s.total_return_pct>=s.benchmark_total_pct)}
-    ${lifeChip('Cost of 1-day wait','−'+Math.round(s.realism_drag_pct||0)+' pts','vs instant computer',false)}
-    ${lifeChip('Worst drawdown',s.max_drawdown_pct+'%','S&P '+s.benchmark_dd_pct+'%',s.max_drawdown_pct>=s.benchmark_dd_pct)}
-    ${lifeChip('Sharpe',s.sharpe,'S&P '+s.benchmark_sharpe,s.sharpe>=s.benchmark_sharpe)}
-  </div>`;
-  const bands=(cal.bands||[]);const maxHit=Math.max(62,...bands.map(b=>b.hit_rate||0));
-  const calRows=bands.map(b=>{const hr=b.hit_rate==null?'—':b.hit_rate+'%';const av=b.avg_fwd_pct==null?'—':(b.avg_fwd_pct>=0?'+':'')+b.avg_fwd_pct+'%';const barW=b.hit_rate?Math.max(2,Math.round((b.hit_rate-50)/(maxHit-50)*100)):0;return `<tr><td style="white-space:nowrap">${b.band}</td><td style="color:var(--muted)">${(b.n||0).toLocaleString()}</td><td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;min-width:60px;height:8px;background:var(--panel2);border-radius:4px;overflow:hidden"><div style="width:${barW}%;height:100%;background:${(b.hit_rate||0)>=55?'var(--up)':'var(--hold)'}"></div></div><b>${hr}</b></div></td><td style="color:${(b.avg_fwd_pct||0)>=0?'var(--up)':'var(--down)'}">${av}</td></tr>`;}).join('');
-  const ov=cal.overall||{};
-  const calBlock=bands.length?`<div style="margin-top:10px"><div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px">WHAT THE MODEL HAS LEARNED — raw confidence vs the win-rate it ACTUALLY delivered, applied walk-forward to size every trade (graded ${ov.horizon_days||10}d after a ${ov.exec_lag||1}-day wait, over ${s.years}y · bar = edge over a 50/50 coin-flip)</div>
-    <table class="tr"><thead><tr><th>Confidence band</th><th>Calls</th><th>Actual hit rate</th><th>Avg move</th></tr></thead><tbody>${calRows}</tbody>
-    <tfoot><tr style="border-top:1px solid var(--line)"><td><b>All BUYs</b></td><td style="color:var(--muted)">${(ov.n||0).toLocaleString()}</td><td><b>${ov.hit_rate==null?'—':ov.hit_rate+'%'}</b></td><td style="color:${(ov.avg_fwd_pct||0)>=0?'var(--up)':'var(--down)'}">${ov.avg_fwd_pct==null?'—':(ov.avg_fwd_pct>=0?'+':'')+ov.avg_fwd_pct+'%'}</td></tr></tfoot></table></div>`:'';
-  const bkN=(cs.meta&&cs.meta.current_basket)||[];const dn=doNext(bkN.length?`<b>Buy / hold the calibrated basket:</b> ${bkN.slice(0,6).map(x=>x.symbol+' '+x.weight_pct+'%').join(', ')}${bkN.length>6?' +'+(bkN.length-6)+' more':''} <span style="color:var(--muted);font-weight:400">— enter 1 trading day after the signal, sized by calibrated edge</span>`:`<b>Sit in cash today</b> — no watchlist name has a positive calibrated edge right now.`, bkN.length?'buy':'hold');
-  box.innerHTML=`${dn}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div class="section-title" style="margin:0">🎯 Watchlist Confidence Backtest — predicted vs actual</div><div style="display:flex;gap:5px;flex-wrap:wrap">${zbt('3m')}${zbt('6m')}${zbt('ytd')}${zbt('1y')}${zbt('2y')}${zbt('max')}</div></div>
-    <div class="sub">${meta.strategy||''} Showing ${dates[0]} → ${dates[n-1]} (${w.wYrs.toFixed(1)}y window, log scale). Stats reflect the selected window.</div>
-    ${basketBlock}
-    ${life}
-    <div class="simgrid">
-      <div class="chartbox">${chartSVG(eq,bm,trades,dates,zoom,stratCol,'conf',ref)}
-        <div id="conf_tip"></div>
-        <div class="lgd"><span><i style="background:${stratCol}"></i>Realistic — 1-day lag + calibrated ${fmtMoney(w.wEnd)} (${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%)</span>
-          <span><i style="background:#38bdf8"></i>Perfect (instant computer) ${fmtMoney(ref&&ref.length?ref[ref.length-1]:s.perfect_value)}</span>
-          <span><i style="background:#5a6675"></i>S&P 500 (actual) ${fmtMoney(w.bEnd)} (${w.wBRet>=0?'+':''}${w.wBRet.toFixed(1)}%)</span></div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="k">Return (window)</div><div class="v" style="color:${w.wRet>=0?'var(--up)':'var(--down)'}">${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">vs S&P (window)</div><div class="v" style="color:${(w.wRet-w.wBRet)>=0?'var(--up)':'var(--down)'}">${(w.wRet-w.wBRet)>=0?'+':''}${(w.wRet-w.wBRet).toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">CAGR</div><div class="v">${w.wCagr.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">Avg names held</div><div class="v">${s.avg_names}</div></div>
-        <div class="stat"><div class="k">Max drawdown</div><div class="v" style="color:var(--down)">${w.wMdd.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">In-market</div><div class="v">${s.exposure_pct}%</div></div>
-      </div>
-    </div>
-    ${calBlock}
-    ${meta.hindsight_note?`<div class="disc"><b style="color:var(--down)">Hindsight warning:</b> ${meta.hindsight_note}</div>`:''}
-    <div class="disc"><b>Read this honestly:</b> the <b>solid</b> line waits a full trading day before acting — you're not the <b>dashed "perfect" computer</b> that trades the signal's own close — sizes each position by its <b>walk-forward calibrated</b> win-probability, learned only from outcomes already known at that date, so it sharpens as the record grows (that's the "${s.calib_events?s.calib_events.toLocaleString():''} graded calls" behind the table), and pays <b>${meta.slippage_bps||10} bps slippage</b> on every dollar it reweights${s.slippage_paid?` (~${fmtMoney(s.slippage_paid)} paid over the backtest)`:''}. The 1-day wait alone costs about ${Math.round(s.realism_drag_pct||0)} points of total return. The gap to the S&P is still inflated by <b>survivorship</b> (the watchlist is today's hand-picked winners) and untaxed gains. The honest core: raw confidence is only signal <i>strength</i> — its real hit-rate tops out near 60%, which is exactly why the sizing now leans on calibrated edge, not the raw %. Information only — not financial advice; past results don't predict the future.</div>`;
-}
 function setFvZoom(z){st.fvZoom=z;renderForever();}
 function renderForever(){
   const fh=st.data&&st.data.forever_hold,box=$('foreverPanel');if(!box)return;
@@ -828,9 +733,8 @@ function renderForever(){
     ${dca}
     ${dcaChart}
     ${driftTable}
-    <div class="disc"><b>Read this honestly:</b> this is the patient opposite of the Confidence Backtest above — no signals, no selling. The <b>drift</b> line never rebalances, so one winner (${topd.symbol} at ${topd.weight_pct}%) can come to dominate: huge upside, but real concentration risk and a deeper drawdown (${s.max_drawdown_pct}% vs ${s.max_drawdown_rebal_pct}% rebalanced). The gap to the S&P is inflated by <b>survivorship</b> — this is today's hand-picked list of names that already won; a "forever" list written years ago would look different, and the basket even <b>holds VOO</b> (the S&P itself). Rebalancing is modeled cost- and tax-free; in a taxable account, trimming winners is taxed, so the drift line is the cheapest to actually run. Information only — not financial advice; past results don't predict the future.</div>`;
+    <div class="disc"><b>Read this honestly:</b> this strategy never sells — no signals, no timing. The <b>drift</b> line never rebalances, so one winner (${topd.symbol} at ${topd.weight_pct}%) can come to dominate: huge upside, but real concentration risk and a deeper drawdown (${s.max_drawdown_pct}% vs ${s.max_drawdown_rebal_pct}% rebalanced). The gap to the S&P is inflated by <b>survivorship</b> — this is today's hand-picked list of names that already won; a "forever" list written years ago would look different, and the basket even <b>holds VOO</b> (the S&P itself). Rebalancing is modeled cost- and tax-free; in a taxable account, trimming winners is taxed, so the drift line is the cheapest to actually run. Information only — not financial advice; past results don't predict the future.</div>`;
 }
-function setMomZoom(z){st.momZoom=z;renderMomSim();}
 function lifeChip(k,a,b,good){return `<div style="flex:1;min-width:118px;background:var(--panel2);border:1px solid var(--line);border-left:3px solid ${good?'var(--up)':'var(--down)'};border-radius:9px;padding:7px 9px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">${k}</div><div style="font-size:15px;font-weight:800;color:${good?'var(--up)':'var(--fg)'}">${a}</div><div style="font-size:10px;color:var(--muted)">${b}</div></div>`;}
 function fmtPctInt(v){return (v>=0?'+':'')+Math.round(v).toLocaleString()+'%';}
 function toneOf(a){a=(''+(a||'')).toUpperCase();return a.includes('SELL')?'sell':(a.includes('WAIT')?'wait':((a.includes('BUY')||a.includes('ACCUM')||a.includes('ADD'))?'buy':'hold'));}
@@ -839,155 +743,6 @@ function doNext(html,tone){const c=tone==='buy'?'var(--buy)':(tone==='sell'?'var
     <span style="font-size:10px;font-weight:800;color:${c};text-transform:uppercase;letter-spacing:.6px;white-space:nowrap">▶ Do next</span>
     <span style="font-size:12.5px;font-weight:600;color:var(--fg);line-height:1.4">${html}</span></div>`;}
 function recNext(arr){const r=(arr||[])[0];if(!r)return '';return doNext(`<b>${r.horizon}:</b> ${r.action}${r.price?` ($${r.price})`:''}${r.note?` — <span style="color:var(--muted);font-weight:400">${r.note}</span>`:''}`,toneOf(r.action));}
-function renderMomSim(){
-  const ms=st.data&&st.data.momentum_sim,box=$('momPanel');
-  if(!ms||!ms.dates||!ms.dates.length){box.innerHTML='<div class="section-title">🏆 My Strategy to Beat the S&P 500</div><div class="empty">Warming up… (first build fetches ~20y of data)</div>';return;}
-  const meta=ms.meta||{},s=ms.stats||{},zoom=st.momZoom||'max';
-  const v=sliceByZoom(ms,zoom);st.views=st.views||{};st.views.mom=v;const {dates,eq,bm,trades}=v,n=eq.length;
-  const w=windowStats(eq,bm,dates);
-  const stratCol=w.wRet>=w.wBRet?'#16a34a':'#f5a524';
-  const zbt=z=>`<span class="zbtn ${zoom===z?'on':''}" onclick="setMomZoom('${z}')">${z.toUpperCase()}</span>`;
-  const pick=meta.current_pick,pickName={SPY:'S&P 500 (SPY)',QQQ:'Nasdaq-100 (QQQ)',IEF:'Treasuries (IEF)'}[pick]||pick||'—';
-  const pickCol=pick==='IEF'?'var(--hold)':'var(--buy)';
-  const rec=(ms.recommendation||[]).map(r=>`<div style="background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 9px;border-left:3px solid ${pickCol}"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">${r.horizon}</div><div style="font-weight:800;color:${pickCol};font-size:12.5px;margin:1px 0">${r.action}</div><div style="font-size:10px;color:var(--muted);line-height:1.35">${r.note}</div></div>`).join('');
-  const rules=`<ol style="margin:4px 0 8px;padding-left:20px;font-size:12px;line-height:1.55">
-    <li><b>Once a month</b> (last trading day), check the trailing <b>12-month return</b> of the S&P 500 (SPY) and the Nasdaq-100 (QQQ).</li>
-    <li><b>Hold the leader</b> — whichever of the two is higher — for the next month.</li>
-    <li><b>The brake:</b> if that leader's 12-month return is <b>negative</b>, hold <b>Treasury bonds (IEF)</b> instead.</li>
-    <li>Repeat — about <b>2 trades a year</b>.</li></ol>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5">Own what's winning (momentum is the market's most durable edge); the bond brake steps aside before the deep bear markets whose −50% holes take years to recover. Dodging the holes while compounding the leader is the edge.</div>`;
-  const life=`<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px">
-    ${lifeChip('CAGR',s.cagr_pct+'%','S&P '+s.benchmark_cagr_pct+'%',s.cagr_pct>=s.benchmark_cagr_pct)}
-    ${lifeChip('Total return',fmtPctInt(s.total_return_pct),'S&P '+fmtPctInt(s.benchmark_total_pct),s.total_return_pct>=s.benchmark_total_pct)}
-    ${lifeChip('Worst drawdown',s.max_drawdown_pct+'%','S&P '+s.benchmark_dd_pct+'%',s.max_drawdown_pct>=s.benchmark_dd_pct)}
-    ${lifeChip('Sharpe',s.sharpe,'S&P '+s.benchmark_sharpe,s.sharpe>=s.benchmark_sharpe)}
-    ${lifeChip('Beat S&P',s.years_beat+'/'+s.years_total+' yrs','~'+s.switches_per_yr+' trades/yr',s.years_beat>s.years_total/2)}
-    ${lifeChip('In bonds',s.pct_in_bonds+'% of mo','over '+s.years+'y',true)}
-  </div>`;
-  const dn=recNext(ms.recommendation);
-  box.innerHTML=`${dn}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div class="section-title" style="margin:0">🏆 My Strategy to Beat the S&P 500 — Momentum Rotation</div><div style="display:flex;gap:5px;flex-wrap:wrap">${zbt('1y')}${zbt('2y')}${zbt('3y')}${zbt('5y')}${zbt('10y')}${zbt('max')}</div></div>
-    <div class="sub">Backtested ${dates[0]} → ${dates[n-1]} on dividend-adjusted prices. 🟢/🔴 mark the months it switched holdings.</div>
-    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
-      <div style="flex:2;min-width:290px">${rules}</div>
-      <div style="flex:1;min-width:236px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px">
-        <div style="font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">This month, hold</div>
-        <div style="font-size:19px;font-weight:800;color:${pickCol};margin:2px 0 8px">${pickName}</div>
-        <div style="display:flex;flex-direction:column;gap:6px">${rec}</div>
-      </div>
-    </div>
-    ${life}
-    <div class="simgrid">
-      <div class="chartbox">${chartSVG(eq,bm,trades,dates,zoom,stratCol,'mom')}
-        <div id="mom_tip"></div>
-        <div class="lgd"><span><i style="background:${stratCol}"></i>Strategy ${fmtMoney(w.wEnd)} (${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%)</span>
-          <span><i style="background:#5a6675"></i>S&P 500 buy &amp; hold ${fmtMoney(w.bEnd)} (${w.wBRet>=0?'+':''}${w.wBRet.toFixed(1)}%)</span></div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="k">Return (window)</div><div class="v" style="color:${w.wRet>=0?'var(--up)':'var(--down)'}">${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">vs S&P (window)</div><div class="v" style="color:${(w.wRet-w.wBRet)>=0?'var(--up)':'var(--down)'}">${(w.wRet-w.wBRet)>=0?'+':''}${(w.wRet-w.wBRet).toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">CAGR</div><div class="v">${w.wCagr.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">S&P CAGR</div><div class="v">${w.wBCagr.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">Max drawdown</div><div class="v" style="color:var(--down)">${w.wMdd.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">Window</div><div class="v">${w.wYrs.toFixed(1)}y</div></div>
-      </div>
-    </div>
-    <div class="disc"><b>Honest caveats:</b> a backtest is not a promise. It beat the S&P in ${s.years_beat} of ${s.years_total} years — so it <b>trailed in ${s.years_total-s.years_beat}</b>, typically sharp V-shaped rebounds where the brake re-enters late. Real switching triggers taxes (shown untaxed here) and the future may not rhyme with the past. Information only — not financial advice.</div>`;
-}
-function setBskZoom(z){st.bskZoom=z;renderBasket();}
-function renderBasket(){
-  const bs=st.data&&st.data.momentum_basket,box=$('basketPanel');
-  if(!bs||!bs.dates||!bs.dates.length){box.innerHTML='<div class="section-title">🧺 Momentum Basket</div><div class="empty">Warming up… (first build fetches ~20y of data)</div>';return;}
-  const meta=bs.meta||{},s=bs.stats||{},zoom=st.bskZoom||'max';
-  const v=sliceByZoom(bs,zoom);st.views=st.views||{};st.views.bsk=v;const {dates,eq,bm,trades}=v,n=eq.length;
-  const w=windowStats(eq,bm,dates);
-  const stratCol=w.wRet>=w.wBRet?'#16a34a':'#f5a524';
-  const zbt=z=>`<span class="zbtn ${zoom===z?'on':''}" onclick="setBskZoom('${z}')">${z.toUpperCase()}</span>`;
-  const holds=meta.current_holds||[];
-  const holdCards=holds.map((h,k)=>`<div style="flex:1;min-width:118px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 11px;border-left:3px solid ${h.cash?'var(--hold)':'var(--buy)'}"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">#${k+1} ${h.cash?'· parked':''}</div><div style="font-size:16px;font-weight:800;color:${h.cash?'var(--hold)':'var(--fg)'}">${h.name}</div><div style="font-size:11px;color:${h.mom_pct>=0?'var(--up)':'var(--down)'}">${h.lead} 12-mo ${h.mom_pct>=0?'+':''}${h.mom_pct}%</div></div>`).join('');
-  const rules=`<ol style="margin:4px 0 8px;padding-left:20px;font-size:12px;line-height:1.55">
-    <li><b>Once a month</b>, rank 9 S&P sectors + Semiconductors + Gold by trailing <b>12-month return</b>.</li>
-    <li><b>Hold the top 3</b>, equal weight (~⅓ each), for the next month.</li>
-    <li><b>The filter:</b> any of the 3 with a <b>negative</b> 12-month return parks in <b>Treasuries (IEF)</b>.</li>
-    <li>Re-rank and rotate monthly.</li></ol>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5">Cross-sectional momentum — own this month's strongest groups, spread across 3 bets instead of one, with a bond brake. A retail-scale take on the "many small uncorrelated bets" idea.</div>`;
-  const life=`<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px">
-    ${lifeChip('CAGR',s.cagr_pct+'%','S&P '+s.benchmark_cagr_pct+'%',s.cagr_pct>=s.benchmark_cagr_pct)}
-    ${lifeChip('Total return',fmtPctInt(s.total_return_pct),'S&P '+fmtPctInt(s.benchmark_total_pct),s.total_return_pct>=s.benchmark_total_pct)}
-    ${lifeChip('Worst drawdown',s.max_drawdown_pct+'%','S&P '+s.benchmark_dd_pct+'%',s.max_drawdown_pct>=s.benchmark_dd_pct)}
-    ${lifeChip('Sharpe',s.sharpe,'S&P '+s.benchmark_sharpe,s.sharpe>=s.benchmark_sharpe)}
-    ${lifeChip('Beat S&P',s.years_beat+'/'+s.years_total+' yrs','top 3 of 11',s.years_beat>s.years_total/2)}
-    ${lifeChip('Turnover',s.rebalances_per_yr+' chg/yr',s.pct_in_cash+'% in cash',true)}
-  </div>`;
-  const dn=recNext(bs.recommendation);
-  box.innerHTML=`${dn}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div class="section-title" style="margin:0">🧺 Momentum Basket — top 3 of 11 by momentum</div><div style="display:flex;gap:5px;flex-wrap:wrap">${zbt('1y')}${zbt('2y')}${zbt('3y')}${zbt('5y')}${zbt('10y')}${zbt('max')}</div></div>
-    <div class="sub">Backtested ${dates[0]} → ${dates[n-1]}, dividend-adjusted, equal-weight top 3. 🟢/🔴 mark groups rotating in / out.</div>
-    <div style="margin:2px 0 4px;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Holding this month</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">${holdCards}</div>
-    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start">
-      <div style="flex:1;min-width:280px">${rules}</div>
-    </div>
-    ${life}
-    <div class="simgrid">
-      <div class="chartbox">${chartSVG(eq,bm,trades,dates,zoom,stratCol,'bsk')}
-        <div id="bsk_tip"></div>
-        <div class="lgd"><span><i style="background:${stratCol}"></i>Basket ${fmtMoney(w.wEnd)} (${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%)</span>
-          <span><i style="background:#5a6675"></i>S&P 500 buy &amp; hold ${fmtMoney(w.bEnd)} (${w.wBRet>=0?'+':''}${w.wBRet.toFixed(1)}%)</span></div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="k">Return (window)</div><div class="v" style="color:${w.wRet>=0?'var(--up)':'var(--down)'}">${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">vs S&P (window)</div><div class="v" style="color:${(w.wRet-w.wBRet)>=0?'var(--up)':'var(--down)'}">${(w.wRet-w.wBRet)>=0?'+':''}${(w.wRet-w.wBRet).toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">CAGR</div><div class="v">${w.wCagr.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">S&P CAGR</div><div class="v">${w.wBCagr.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">Max drawdown</div><div class="v" style="color:var(--down)">${w.wMdd.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">Window</div><div class="v">${w.wYrs.toFixed(1)}y</div></div>
-      </div>
-    </div>
-    <div class="disc"><b>Honest caveats:</b> a backtest, not a promise. It beat the S&P in ${s.years_beat} of ${s.years_total} years and it churns (~${s.rebalances_per_yr} changes/yr), so real-world taxes and costs would bite (shown untaxed here). Only 3 sectors at a time means it can swing harder than the index. Information only — not financial advice.</div>`;
-}
-function setPnyZoom(z){st.pnyZoom=z;renderPenny();}
-function renderPenny(){
-  const ph=st.data&&st.data.penny_hold,box=$('pennyPanel');if(!box)return;
-  if(!ph||!ph.dates||!ph.dates.length){box.innerHTML='<div class="section-title">🎰 $500 Penny Sleeve</div><div class="empty">Warming up… (first build fetches ~9y of data)</div>';return;}
-  const meta=ph.meta||{},s=ph.stats||{},zoom=st.pnyZoom||'max';
-  const v=sliceByZoom(ph,zoom);st.views=st.views||{};st.views.pny=v;const {dates,eq,bm,trades}=v,n=eq.length;
-  const w=windowStats(eq,bm,dates);
-  const stratCol=w.wRet>=w.wBRet?'#16a34a':'#f5a524';
-  const zbt=z=>`<span class="zbtn ${zoom===z?'on':''}" onclick="setPnyZoom('${z}')">${z.toUpperCase()}</span>`;
-  const holds=meta.current_holds||[];
-  const holdCards=holds.length?holds.map((h,k)=>`<div style="flex:1;min-width:104px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;border-left:3px solid var(--buy)"><div style="font-size:10px;color:var(--muted)">#${k+1} · $${h.price}</div><div style="font-size:15px;font-weight:800">${h.ticker}</div><div style="font-size:11px;color:var(--up)">12-mo +${h.mom_pct}%</div></div>`).join(''):'<div class="empty" style="font-size:12px">All cash — nothing trending up right now.</div>';
-  const rules=`<ol style="margin:4px 0 8px;padding-left:20px;font-size:12px;line-height:1.55">
-    <li>Rank these low-priced <b>listed</b> (Robinhood-tradable) names by <b>12-month return</b>.</li>
-    <li>Hold the <b>top 3 with positive momentum</b>, equal weight; cash for any empty slot.</li>
-    <li><b>Rebalance once a quarter</b> — low turnover keeps slippage small.</li></ol>
-    <div style="font-size:11px;color:var(--muted);line-height:1.5">The ONLY penny approach that survived testing — active all-in/all-out trading of these names went to ~$0 after 2.5% slippage. "Hold, don't churn."</div>`;
-  const life=`<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px">
-    ${lifeChip('$500 →',fmtMoney(s.value),'CAGR '+s.cagr_pct+'%',s.cagr_pct>=s.benchmark_cagr_pct)}
-    ${lifeChip('vs S&P',fmtPctInt(s.total_return_pct),'SPY '+fmtPctInt(s.benchmark_total_pct),s.total_return_pct>=s.benchmark_total_pct)}
-    ${lifeChip('Worst drawdown',s.max_drawdown_pct+'%','SPY '+s.benchmark_dd_pct+'%',s.max_drawdown_pct>=s.benchmark_dd_pct)}
-    ${lifeChip('Beat S&P',s.years_beat+'/'+s.years_total+' yrs','~'+s.trades_per_yr+' trades/yr',s.years_beat>s.years_total/2)}
-  </div>`;
-  const dn=recNext(ph.recommendation);
-  box.innerHTML=`${dn}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div class="section-title" style="margin:0">🎰 $500 Penny Sleeve — low-priced momentum (hold, don't churn)</div><div style="display:flex;gap:5px;flex-wrap:wrap">${zbt('1y')}${zbt('2y')}${zbt('3y')}${zbt('5y')}${zbt('max')}</div></div>
-    <div class="sub">Backtested ${dates[0]} → ${dates[n-1]}, $500 start, 2.5% slippage modeled. 🟢/🔴 = quarterly rotation.</div>
-    <div style="margin:2px 0 4px;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Holding this quarter</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">${holdCards}</div>
-    <div style="display:flex;gap:14px;flex-wrap:wrap"><div style="flex:1;min-width:280px">${rules}</div></div>
-    ${life}
-    <div class="simgrid">
-      <div class="chartbox">${chartSVG(eq,bm,trades,dates,zoom,stratCol,'pny')}
-        <div id="pny_tip"></div>
-        <div class="lgd"><span><i style="background:${stratCol}"></i>Sleeve ${fmtMoney(w.wEnd)} (${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%)</span>
-          <span><i style="background:#5a6675"></i>S&P 500 ${fmtMoney(w.bEnd)} (${w.wBRet>=0?'+':''}${w.wBRet.toFixed(1)}%)</span></div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="k">Return (window)</div><div class="v" style="color:${w.wRet>=0?'var(--up)':'var(--down)'}">${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">vs S&P (window)</div><div class="v" style="color:${(w.wRet-w.wBRet)>=0?'var(--up)':'var(--down)'}">${(w.wRet-w.wBRet)>=0?'+':''}${(w.wRet-w.wBRet).toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">CAGR</div><div class="v">${w.wCagr.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">Max drawdown</div><div class="v" style="color:var(--down)">${w.wMdd.toFixed(1)}%</div></div>
-      </div>
-    </div>
-    <div class="disc"><b style="color:var(--down)">High risk — read this:</b> backtest drawdown ${s.max_drawdown_pct}% (you'd have nearly been wiped out), and it beat the S&P in only ${s.years_beat}/${s.years_total} years — the gains came from a few explosive stretches.${s.ex_value!=null?` <b style="color:var(--down)">Strip out the 2019–21 COVID/meme boom and it's ${s.ex_total_pct}% ($500 → ${fmtMoney(s.ex_value)}) vs the S&P's +${s.ex_spy_total_pct}% — the entire edge was that one regime.</b>`:''} The return is also inflated by <b>hindsight</b> in choosing this universe; forward results will likely be far lower. Only money you can afford to lose. Not advice.</div>`;
-}
 function setCrZoom(z){st.crZoom=z;renderCrashRadar();}
 function renderCrashRadar(){
   const cr=st.data&&st.data.crash_radar,box=$('crashRadar');if(!box)return;
@@ -1038,11 +793,18 @@ function renderCrashRadar(){
     ${durNow}
     <div style="font-size:10px;color:var(--muted);margin-top:5px">"Odds" = share of all 10%+ drawdowns that ended in that bucket. "Fall takes" = peak → trough; "recovery" = trough → back to the old high. Historical medians, not promises — no model can time the bottom.</div>
   </div>`:'';
+  const sh=st.data&&st.data.sector_health||{};
+  const shRows=Object.entries(sh).sort((a,b)=>a[1].off_high_pct-b[1].off_high_pct);
+  const shCol=s=>s==='crash'?'#f85a6c':(s==='bear'?'#f85a6c':(s==='correction'?'#f5a524':(s==='pullback'?'#e8d44d':'#22a36e')));
+  const shChips=shRows.map(([etf,h])=>`<span title="1mo ${h.mom1m_pct>=0?'+':''}${h.mom1m_pct}%${h.below_200d?' · below 200d':''}" style="font-size:10.5px;padding:4px 8px;border-radius:8px;border:1px solid ${shCol(h.status)};background:var(--panel2);white-space:nowrap"><b>${h.name}</b> <span style="color:${shCol(h.status)};font-weight:800">${h.off_high_pct}%</span>${h.status!=='ok'?` <span style="color:${shCol(h.status)}">${h.status.toUpperCase()}</span>`:''}${h.below_200d?' <span style="color:#f0a0a0">▼200d</span>':''}</span>`).join(' ');
+  const worst=shRows.filter(([e,h])=>h.status==='correction'||h.status==='bear'||h.status==='crash');
+  const secBlock=shRows.length?`<div style="background:var(--panel2);border:1px solid ${worst.length?'#f5a524':'var(--line)'};border-radius:9px;padding:8px 11px;margin-bottom:9px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">🧭 Sector Crash Watch — % off 52-week high <span style="text-transform:none">· crashes cluster by sector; the S&P line above can look calm while one industry (e.g. memory, Jul 2026) is already in a bear</span></div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:6px">${shChips}</div>${worst.length?`<div style="font-size:10.5px;margin-top:6px;color:#f5a524"><b>⚠ ${worst.map(([e,h])=>h.name+" "+h.off_high_pct+"%").join(" · ")}</b> — members of these groups are capped at HOLD/SELL by the signal engine until the drawdown eases.</div>`:''}</div>`:'';
   const valBlock=TH.balanced?`<div style="background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 11px;margin-bottom:9px"><div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">📋 Early-warning track record — walk-forward / out-of-sample${L.span?' · '+L.span[0]+' → '+L.span[1]:''}</div><div style="font-size:10.5px;color:var(--muted);margin:3px 0 6px">Across <b>${L.n_episodes}</b> past 10%+ drawdowns: how often the leading 3-month signal fired <b>before</b> the drop, its typical head-start, and how often it cried wolf. Pick your tolerance for false alarms.</div><table class="tr" style="font-size:11px"><thead><tr><th>Threshold</th><th>Fires</th><th>Caught</th><th>Median lead</th><th>False alarms</th></tr></thead><tbody>${thrRow('sensitive',TH.sensitive)}${thrRow('balanced',TH.balanced)}${thrRow('precise',TH.precise)}</tbody></table><div style="font-size:10px;color:var(--muted);margin-top:5px">Median lead ≈ trading days before the drop the warning first appeared. False alarms = warnings not followed by a 10% drop within 3 months — the unavoidable cost of early warning.</div></div>`:'';
   box.innerHTML=`<div style="background:var(--card-grad);border:1px solid ${border};border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)">
    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:8px"><div style="font-size:14px;font-weight:800">🛰️ Crash Radar — S&P 500, 1 / 3 / 6-month risk</div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:12px;color:var(--muted)">VIX ${cr.meta.vix} · gauge ${sc!=null?sc+'/100 '+lvl:'—'}</span><span style="display:flex;gap:4px">${zbt('3m')}${zbt('6m')}${zbt('1y')}${zbt('2y')}${zbt('max')}</span></div></div>
    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:9px">${cell('1 month',h1)}${cell('3 months',h3)}${cell('6 months',h6)}</div>
    <div style="font-size:10px;color:var(--muted);margin:-4px 0 8px">↑ <b style="color:#7fe0b0">Leading model (v7):</b> fit on the yield curve, credit spreads, breadth (equal- vs cap-weight) &amp; the VIX term structure — signals that historically move <b>weeks-to-months before</b> a drawdown, not the old reactive stress gauges. Every number is computed walk-forward (out-of-sample). Track record ↓.</div>
+   ${secBlock}
    ${valBlock}
    ${durBlock}
    ${rec.available?`<div style="background:var(--panel2);border:1px solid var(--line);border-left:3px solid ${rec.curve_status==='inverted'?'#f85a6c':(rec.curve_status==='flat'?'#f5a524':'#22a36e')};border-radius:9px;padding:8px 11px;margin-bottom:9px;font-size:11.5px">🏛️ <b>Leading inputs right now:</b> 10y−3m curve <b style="color:${rec.curve_status==='inverted'?'#f85a6c':'#7fe0b0'}">${rec.curve>=0?'+':''}${rec.curve}% (${rec.curve_status})</b> · credit <b>${rec.credit_status}</b>${lf.breadth_mom!=null?` · breadth 3mo <b style="color:${lf.breadth_mom<0?'#f0a0a0':'#7fe0b0'}">${lf.breadth_mom>=0?'+':''}${lf.breadth_mom}%</b>`:''}${lf.vix_ts!=null?` · VIX term <b style="color:${lf.vix_ts<0?'#f0a0a0':'#7fe0b0'}">${lf.vix_ts>=0?'+':''}${lf.vix_ts}%</b>`:''}. ${rec.curve_status==='inverted'?'<b style="color:#f85a6c">Curve inverted</b> — the classic late-cycle warning; the model weighs it alongside the others.':'No curve inversion right now.'}</div>`:''}
@@ -1087,44 +849,6 @@ function renderTopCalls(){
   const s=x.scorecard||{};
   const rep=s.graded?`📊 Model report card: <b style="color:${s.hit_rate>=50?'var(--up)':'var(--down)'}">${s.hit_rate}%</b> of <b>${s.graded}</b> graded calls were right (${s.horizon_days}-day outcome) · avg <b style="color:${s.avg_aligned_return>=0?'var(--up)':'var(--down)'}">${s.avg_aligned_return>=0?'+':''}${s.avg_aligned_return}%</b> if followed · ${s.open} pending`:`📊 Model report card: building a live track record — ${s.open||0} call(s) logged, first grades appear after ~${s.horizon_days||14} days`;
   box.innerHTML=`<div style="background:var(--card-grad);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)"><div style="font-size:14px;font-weight:800;margin-bottom:9px">⭐ Top Calls — Buy / Hold / Sell <span style="font-size:11px;color:var(--muted);font-weight:500">· live, updates every refresh</span></div><div style="display:flex;gap:10px;flex-wrap:wrap">${cards}</div><div style="font-size:11px;color:var(--muted);margin-top:9px">${rep} <span style="opacity:.7">— logged daily &amp; graded forward to improve the model. Not advice.</span></div></div>`;
-}
-function setDipZoom(z){st.dipZoom=z;renderDip();}
-function renderDip(){
-  const dp=st.data&&st.data.dip_rotate,box=$('dipPanel');if(!box)return;
-  if(!dp||!dp.dates||!dp.dates.length){box.innerHTML='<div class="section-title">📈 VOO Dip → Best Mega-Cap</div><div class="empty">Warming up… (first build fetches ~10y of data)</div>';return;}
-  const meta=dp.meta||{},s=dp.stats||{},zoom=st.dipZoom||'max';
-  const v=sliceByZoom(dp,zoom);st.views=st.views||{};st.views.dip=v;const {dates,eq,bm,trades}=v,n=eq.length;
-  const w=windowStats(eq,bm,dates);
-  const stratCol=w.wRet>=w.wBRet?'#16a34a':'#f5a524';
-  const zbt=z=>`<span class="zbtn ${zoom===z?'on':''}" onclick="setDipZoom('${z}')">${z.toUpperCase()}</span>`;
-  const pick=meta.current_pick,pickTxt=pick?`Currently holding <b style="color:var(--buy)">${pick}</b> — indicators picked it at the ${meta.pick_date} dip`:'Currently in VOO — waiting for the next 5%-from-peak dip';
-  const rec=(dp.recommendation||[]).map(r=>`<div style="flex:1;min-width:165px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:7px 9px;border-left:3px solid ${r.action.indexOf('EXTREME')>=0?'var(--down)':'var(--buy)'}"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px">${r.horizon}</div><div style="font-weight:800;font-size:12.5px;margin:1px 0">${r.action}</div><div style="font-size:10px;color:var(--muted);line-height:1.35">${r.note}</div></div>`).join('');
-  const life=`<div style="display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px">
-    ${lifeChip('$10k →',fmtMoney(s.value),'CAGR '+s.cagr_pct+'%',s.cagr_pct>=s.benchmark_cagr_pct)}
-    ${lifeChip('VOO hold',fmtMoney(s.benchmark_value),'CAGR '+s.benchmark_cagr_pct+'%',true)}
-    ${lifeChip('Worst drawdown',s.max_drawdown_pct+'%','VOO '+s.benchmark_dd_pct+'%',s.max_drawdown_pct>=s.benchmark_dd_pct)}
-    ${lifeChip('Beat VOO',s.years_beat+'/'+s.years_total+' yrs',(s.trades!=null?s.trades+' trades total':'≤5/yr cap'),s.years_beat>s.years_total/2)}
-  </div>`;
-  const dn=recNext(dp.recommendation);
-  box.innerHTML=`${dn}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div class="section-title" style="margin:0">📈 VOO ⇄ Best Mega-Cap on Dips <span style="font-size:11px;color:var(--muted);font-weight:500">· indicator pick · max 5 trades/yr</span></div><div style="display:flex;gap:5px;flex-wrap:wrap">${zbt('1y')}${zbt('2y')}${zbt('3y')}${zbt('5y')}${zbt('max')}</div></div>
-    <div class="sub">${meta.strategy||''} ${pickTxt}.</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">${rec}</div>
-    ${life}
-    <div class="simgrid">
-      <div class="chartbox">${chartSVG(eq,bm,trades,dates,zoom,stratCol,'dip')}
-        <div id="dip_tip"></div>
-        <div class="lgd"><span><i style="background:${stratCol}"></i>Strategy ${fmtMoney(w.wEnd)} (${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%)</span>
-          <span><i style="background:#5a6675"></i>VOO buy &amp; hold ${fmtMoney(w.bEnd)} (${w.wBRet>=0?'+':''}${w.wBRet.toFixed(1)}%)</span></div>
-      </div>
-      <div class="stats">
-        <div class="stat"><div class="k">Return (window)</div><div class="v" style="color:${w.wRet>=0?'var(--up)':'var(--down)'}">${w.wRet>=0?'+':''}${w.wRet.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">vs VOO (window)</div><div class="v" style="color:${(w.wRet-w.wBRet)>=0?'var(--up)':'var(--down)'}">${(w.wRet-w.wBRet)>=0?'+':''}${(w.wRet-w.wBRet).toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">CAGR</div><div class="v">${w.wCagr.toFixed(1)}%</div></div>
-        <div class="stat"><div class="k">Max drawdown</div><div class="v" style="color:var(--down)">${w.wMdd.toFixed(1)}%</div></div>
-      </div>
-    </div>
-    ${meta.hindsight_note?`<div class="disc"><b style="color:var(--down)">Hindsight warning:</b> ${meta.hindsight_note}</div>`:''}
-    <div class="disc"><b style="color:var(--down)">Reality check:</b> full backtest turned $10k into ${fmtMoney(s.value)} vs VOO's ${fmtMoney(s.benchmark_value)} — barely ahead, beating VOO in only ${s.years_beat}/${s.years_total} years with a ${s.max_drawdown_pct}% drawdown (VOO ${s.benchmark_dd_pct}%). It rotates VOO⇄stock on dips/recoveries but at most 5 trades a year, so while it's in one name it can ride it down hard (it held TSLA through the 2022 crash). Not advice.</div>`;
 }
 function renderInsider(){
   const x=st.data&&st.data.insiders,box=$('insiderCard');if(!box)return;

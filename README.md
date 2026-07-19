@@ -54,6 +54,19 @@ Composite score, −100…+100:
 
 `score ≥ +25 → BUY`, `≤ −25 → SELL`, else `HOLD`. Strength % = |score|.
 
+**Crash guards (signal v2, added after the Jul 2026 memory-stock crash slipped through):**
+
+| Guard | Rule | Industry basis |
+|---|---|---|
+| 200-day trend filter | price < 200d avg → no BUY, −10 pts | Faber timing model / trend following |
+| 52-week-high drawdown | ≥10% off high −12 pts · ≥20% off −25 pts + BUY cap | absolute momentum (Antonacci) |
+| Fast-crash override | −12% in 10d or −18% in 1mo → forced SELL | crisis momentum / stop discipline |
+| Volatility spike | 10d vol ≥ 1.8× 3-mo vol → bullish score ×0.6 | volatility targeting |
+| Sector crash overlay | own sector/industry ETF ≥15% off high → no BUY, −10 pts | crashes cluster by industry |
+| Event dampener fix | dampener now shrinks only bullish scores — a crashing name is no longer pulled back to HOLD | — |
+
+The **Sector Crash Watch** strip in the Crash Radar tab tracks all 11 sector ETFs plus SMH/SOXX vs their 52-week highs — sector-level bears (like memory, Jul 2026) now alarm even when the S&P itself looks calm.
+
 **Watchlist long-term discipline** (applied on top, watchlist only): durable compounders
 (≥20%/yr 10-yr drift, high historical 1-yr up-odds) get a boost; a name with **negative
 long-term drift is capped at HOLD**. A **pullback guard** damps BUY strength on
@@ -89,7 +102,7 @@ Simulator capital is `START_CAPITAL = 5000.0` in `simulator.py`.
 | `simulator.py` | $5,000 backtest + daily open→close paper-trading engine |
 | `daily_summary.py` | After-close text summary (used by the scheduled task) |
 | `strategy.py` | Shared signal/strategy helpers |
-| `voo_sim.py`, `momentum_sim.py`, `momentum_basket.py`, `watchlist_sim.py`, `dip_rotate.py`, `penny_hold.py`, `forever_hold.py` | Additional strategy simulators (each persists its own `*_state.json`) |
+| `forever_hold.py` | **The strategy**: buy durable leaders + core ETFs, never sell (lump-sum & DCA variants, with entry "Buy now?" signals). The former sleeves (voo/momentum/basket/watchlist/dip/penny) are in `archive/` |
 | `top_calls.py`, `drift.py`, `watchlist_levels.py`, `insider.py`, `crash_radar.py` | Top-calls scorecard, drift tags, support/resistance levels, insider flags, crash radar |
 | `sim_state.json` (and other `*_state.json`) | Saved simulator history (created on first run) |
 | `build_snapshot_static.py` | Builds a static `public/` snapshot for Cloudflare/GitHub Pages (see `DEPLOY_CLOUDFLARE.md`) |

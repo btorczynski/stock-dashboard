@@ -1,8 +1,8 @@
 """
 Buy-and-Hold-FOREVER sleeve — the patient cousin of the Watchlist Confidence Backtest.
 
-Where watchlist_sim.py trades the BUY/SELL/HOLD signal every day, THIS module does the
-opposite: it buys a curated basket of the watchlist's most DURABLE names once, then sits
+Where the signal-trading sleeves traded the BUY/SELL/HOLD signal every day, THIS module
+(the sole surviving strategy) does the opposite: it buys a basket of durable names, then sits
 on its hands. No signals, no timing, no churn — just "own good things and wait."
 
 WHAT IT HOLDS (a hand-picked "forever" subset of the dashboard watchlist — edit HOLDINGS):

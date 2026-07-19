@@ -22,8 +22,8 @@ def main():
     except Exception:
         print("build_snapshot FAILED:\n"); traceback.print_exc(); return
     print(f"BUILD OK in {time.time()-t0:.0f}s\n")
-    checks = ["top_calls", "sectors", "movers", "watchlist", "picks", "sim", "voo_sim",
-              "momentum_sim", "momentum_basket", "penny_hold", "insiders", "crash_risk", "macro"]
+    checks = ["top_calls", "sectors", "movers", "watchlist", "picks", "sim",
+              "forever_hold", "sector_health", "insiders", "crash_risk", "macro"]
     for k in checks:
         v = snap.get(k)
         if isinstance(v, dict):
@@ -39,10 +39,12 @@ def main():
     print("  Scorecard:", "graded", sc.get("graded"), "| open", sc.get("open"), "| hit_rate", sc.get("hit_rate"))
     wl = snap.get("watchlist", []) or []
     print("  Drift tags:", [(w.get("ticker"), (w.get("drift") or {}).get("tag")) for w in wl if w.get("drift")][:8])
-    for name in ("momentum_sim", "momentum_basket", "penny_hold"):
-        st = (snap.get(name) or {}).get("stats", {})
-        if st:
-            print(f"  {name}: value={st.get('value')} CAGR={st.get('cagr_pct')}% vsSPY={st.get('benchmark_cagr_pct')}%")
+    st = (snap.get("forever_hold") or {}).get("stats", {})
+    if st:
+        print(f"  forever_hold: value={st.get('value')} CAGR={st.get('cagr_pct')}% vsSPY={st.get('benchmark_cagr_pct')}%")
+    sh = snap.get("sector_health") or {}
+    warn = {k: v for k, v in sh.items() if v.get("status") not in (None, "ok")}
+    print("  Sector crash watch:", {k: f"{v['off_high_pct']}% ({v['status']})" for k, v in warn.items()} or "all sectors healthy")
     print("\nIf everything above is non-EMPTY, the dashboard is healthy. Run run_dashboard.bat to view it.")
 
 

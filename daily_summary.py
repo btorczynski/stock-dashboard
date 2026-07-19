@@ -34,10 +34,11 @@ def format_summary(snap):
         L.append(f"{cr.get('scale_note', '')}")
         L.append(f"_{cr.get('timing_note', '')}_")
 
-    voo = snap.get("voo_sim") or {}
-    if voo.get("recommendation"):
-        L.append("\n**VOO (S&P 500) timing call:** "
-                 + " · ".join(f"{x['horizon']}: {x['action']} (~${x['price']})" for x in voo["recommendation"]))
+    sh = snap.get("sector_health") or {}
+    warn = [v for v in sh.values() if v.get("status") not in (None, "ok", "pullback")]
+    if warn:
+        L.append("\n**Sector crash watch:** "
+                 + " · ".join(f"{v['name']} {v['off_high_pct']}% off high ({v['status']})" for v in warn))
 
     L.append("\n## Top 5 buy signals")
     if snap.get("picks"):
