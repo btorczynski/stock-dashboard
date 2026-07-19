@@ -65,28 +65,37 @@ def _price(daily, sym):
         return None
 
 
+def _entry(src):
+    return {"symbol": src.get("symbol") or src.get("ticker"), "action": src["action"],
+            "score": src.get("score", 0), "price": src["price"], "change_pct": src.get("change_pct"),
+            "conf": src.get("conf_pct"), "conf_basis": src.get("conf_basis")}
+
+
 def _candidates(picks, watchlist):
     pool = {}
     for p in (picks or []):
         if p.get("price") and p.get("action") in ("BUY", "SELL", "HOLD"):
-            pool[p["symbol"]] = {"symbol": p["symbol"], "action": p["action"], "score": p.get("score", 0),
-                                 "price": p["price"], "change_pct": p.get("change_pct")}
+            pool[p["symbol"]] = _entry(p)
     for w in (watchlist or []):
-        s = w.get("signal") or {}
+        s = dict(w.get("signal") or {})
         t = w.get("ticker")
         if t and s.get("price") and s.get("action") in ("BUY", "SELL", "HOLD"):
             cur = pool.get(t)
             if (not cur) or abs(s.get("score", 0)) > abs(cur["score"]):
-                pool[t] = {"symbol": t, "action": s["action"], "score": s.get("score", 0),
-                           "price": s["price"], "change_pct": s.get("change_pct")}
+                s["symbol"] = t
+                pool[t] = _entry(s)
     cands = list(pool.values())
-    cands.sort(key=lambda c: abs(c["score"]), reverse=True)
+    # conviction ranks; the CALIBRATED hit-rate (historical odds the band's call
+    # was right — see signal_calibration.py) breaks ties and is what we report
+    cands.sort(key=lambda c: (abs(c["score"]), c.get("conf") or 0), reverse=True)
     return cands
 
 
 def compute(picks, watchlist, daily):
     cands = _candidates(picks, watchlist)
-    top = [{"symbol": c["symbol"], "action": c["action"], "confidence": abs(int(c["score"])),
+    top = [{"symbol": c["symbol"], "action": c["action"],
+            "confidence": (int(c["conf"]) if c.get("conf") is not None else abs(int(c["score"]))),
+            "conf_basis": ("hist" if c.get("conf") is not None else "score"),
             "price": round(c["price"], 2), "change_pct": c["change_pct"]} for c in cands[:2]]
     st = load_state()
     latest = _latest_date(daily)

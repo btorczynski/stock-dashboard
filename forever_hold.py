@@ -399,7 +399,8 @@ def _entry_signals(C, held):
                "hist": obands, "hist_today": obands.get(ob)}
     return {"holdings": rows, "overall": overall,
             "params": {"w_dip": W_DIP, "w_live": W_LIVE, "fwd_days": FWD_DAYS,
-                       "acc": DIP_ACC, "exp": DIP_EXP}}
+                       "acc": DIP_ACC, "exp": DIP_EXP,
+                       "live_note": "live leg = calibrated 1mo/1yr band up-odds when available"}}
 
 
 def refresh_entry(state, watchlist=None):
@@ -420,7 +421,18 @@ def refresh_entry(state, watchlist=None):
         act = s.get("action")
         strg = float(s.get("strength") or 0)
         price = s.get("price")
-        live = 50.0 + (strg / 2 if act == "BUY" else (-strg / 2 if act == "SELL" else 0.0))
+        # Live leg v2: when the signal carries CALIBRATED band odds (historical
+        # chance the name was higher 1mo / 1yr later from this signal band —
+        # signal_calibration.py), use those directly; they are already on the
+        # same 0-100 probability scale the blend wants. Heuristic fallback
+        # (50 ± strength/2) only when calibration is unavailable.
+        p1m, p1y = s.get("p_up_1m_pct"), s.get("p_up_1y_pct")
+        if p1m is not None and p1y is not None:
+            live = (float(p1m) + float(p1y)) / 2.0
+            live_basis = "hist"
+        else:
+            live = 50.0 + (strg / 2 if act == "BUY" else (-strg / 2 if act == "SELL" else 0.0))
+            live_basis = "score"
         dip = float(h["dip_score"])
         if price and h.get("sma200") and h.get("hi52"):      # refresh cheapness off the live price
             vs200 = price / h["sma200"] - 1.0
@@ -433,9 +445,18 @@ def refresh_entry(state, watchlist=None):
             h["dip_band"] = _band(dip)
             h["hist_today"] = h["hist"].get(h["dip_band"])
         buy = round(W_DIP * dip + W_LIVE * live)
+        # Falling-knife guard: while the fast-crash override is firing (−12%/10d
+        # or −18%/1mo, still in free-fall), "cheap" is not yet "on sale" — hold
+        # new cash back; the verdict flips to Accumulate as the flag clears.
+        if s.get("crash_flag") == "crash" and buy >= DIP_ACC:
+            buy = DIP_ACC - 1
+            h["capped"] = "fast-crash"
+        else:
+            h.pop("capped", None)
         h["live_action"] = act or "—"
         h["live_strength"] = int(round(strg))
         h["live_score"] = round(live)
+        h["live_basis"] = live_basis
         h["buy_now"] = buy
         h["verdict"] = _band(buy)
         scores.append(buy)
