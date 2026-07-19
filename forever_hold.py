@@ -46,6 +46,8 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
+import signal_calibration as _cal
+
 STATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "forever_state.json")
 
 # Curated "forever" subset of the dashboard WATCHLIST. Edit to taste.
@@ -57,7 +59,7 @@ BENCHMARK = "SPY"
 BASE = 5000.0          # lump-sum dollars (echoes the $5k theme)
 DCA_MONTHLY = 250.0    # dollars added every month in the DCA variant
 PERIOD = "max"         # pull full history; the basket starts when the LAST name is available
-SCHEMA = 2             # bumped: added per-holding "Buy now?" entry signals
+SCHEMA = 3             # bumped: confidence-weighted DCA variant added to the sim
 
 # --- "Buy now?" entry signal ------------------------------------------------
 # Even a forever holding has better and worse moments to deploy new cash. The
@@ -95,6 +97,48 @@ def _dip_from(vs200, offhigh, rsi):
 
 def _band(score):
     return "Accumulate" if score >= DIP_ACC else ("Expensive" if score < DIP_EXP else "Fair")
+
+
+def _conf_weight_matrix(C, held):
+    """Reconstruct the 'Buy now?' confidence (W_DIP·dip + W_LIVE·calibrated band
+    up-odds, with the falling-knife cap) for EVERY historical day/name, so the
+    DCA sim can tilt each month's cash the way the live verdicts would have.
+
+    Same machinery as the live stack: the price-only v2 score series comes from
+    signal_calibration.hist_scores, each day's band is graded by the name's own
+    forward 1-month/1-year up-odds (shrunk toward its overall rate, M0=60).
+    HONESTY NOTE: band grades are estimated over the full sample, so the weights
+    carry mild look-ahead; inputs are otherwise price-only and point-in-time.
+    Returns a (T, N) array on C.index; warm-up days default to neutral 50."""
+    bins = [-101] + [hi for _, _, hi in _cal.BANDS]
+    labels = [name for name, _, _ in _cal.BANDS]
+    out = pd.DataFrame(50.0, index=C.index, columns=held)
+    for t in held:
+        c = C[t]
+        sc = _cal.hist_scores(c)
+        f21, f252 = c.shift(-21) / c - 1, c.shift(-252) / c - 1
+        p21_all = float((f21.dropna() > 0).mean()) if f21.notna().any() else 0.6
+        p252_all = float((f252.dropna() > 0).mean()) if f252.notna().any() else 0.6
+        band = pd.cut(sc, bins=bins, labels=labels, right=False)
+        live_of = {}
+        for name in labels:
+            m = (band == name)
+            v21, v252 = f21[m].dropna(), f252[m].dropna()
+            p21 = (float((v21 > 0).sum()) + _cal.M0 * p21_all) / (len(v21) + _cal.M0)
+            p252 = (float((v252 > 0).sum()) + _cal.M0 * p252_all) / (len(v252) + _cal.M0)
+            live_of[name] = 100.0 * (p21 + p252) / 2.0
+        live = band.map(live_of).astype(float)
+        sma200 = c.rolling(200, min_periods=200).mean()
+        hi52 = c.rolling(252, min_periods=60).max()
+        rsi = _rsi(c)
+        dip = (100.0 * ((0.5 - (c / sma200 - 1.0) / 0.40).clip(0, 1)
+                        + (-(c / hi52 - 1.0) / 0.40).clip(0, 1)
+                        + ((70.0 - rsi) / 40.0).clip(0, 1)) / 3.0)
+        buy = W_DIP * dip + W_LIVE * live
+        knife = ((c / c.shift(10) - 1) <= -0.12) | ((c / c.shift(21) - 1) <= -0.18)
+        buy = buy.where(~(knife & (buy >= DIP_ACC)), DIP_ACC - 1)   # falling-knife cap
+        out[t] = buy.fillna(50.0)
+    return out.values
 
 
 # --------------------------------------------------------------------------- data
@@ -191,12 +235,15 @@ def backtest(closes):
     # ---- DOLLAR-COST AVERAGING --------------------------------------------------
     per_name = DCA_MONTHLY / N
     contrib_set = set(contrib_days)
+    conf_w = _conf_weight_matrix(C, held)             # (T, N) historical Buy-now confidence
     dsh = np.zeros(N)                                 # DCA drift shares
     dsh_re = np.zeros(N)                              # DCA + annual rebalance shares
+    dsh_cf = np.zeros(N)                              # DCA, confidence-weighted buys
     spy_dsh = 0.0
     contributed = 0.0
     dca_val = np.empty(T)
     dca_val_re = np.empty(T)
+    dca_val_cf = np.empty(T)
     dca_contrib = np.empty(T)
     dca_bench = np.empty(T)
     cashflows = []                                    # for XIRR (basket, drift)
@@ -205,6 +252,11 @@ def backtest(closes):
         if i in contrib_set:
             dsh += per_name / P[i]
             dsh_re += per_name / P[i]
+            # confidence tilt: same $250, split toward the names the confidence
+            # stack rated best that day. Floor keeps every holding accumulating
+            # (it's still a forever basket — never a zero-weight month).
+            w = np.clip(conf_w[i] - 30.0, 5.0, None)
+            dsh_cf += (DCA_MONTHLY * w / w.sum()) / P[i]
             spy_dsh += DCA_MONTHLY / spv[i]
             contributed += DCA_MONTHLY
             cashflows.append((idx[i].to_pydatetime(), -DCA_MONTHLY))
@@ -214,6 +266,7 @@ def backtest(closes):
             dsh_re = (val / N) / P[i]
         dca_val[i] = float((dsh * P[i]).sum())
         dca_val_re[i] = float((dsh_re * P[i]).sum())
+        dca_val_cf[i] = float((dsh_cf * P[i]).sum())
         dca_contrib[i] = contributed
         dca_bench[i] = spy_dsh * spv[i]
 
@@ -221,6 +274,7 @@ def backtest(closes):
     end_dt = idx[-1].to_pydatetime()
     mwr_basket = _xirr(cashflows + [(end_dt, float(dca_val[-1]))])
     mwr_rebal = _xirr(cashflows + [(end_dt, float(dca_val_re[-1]))])
+    mwr_conf = _xirr(cashflows + [(end_dt, float(dca_val_cf[-1]))])
     mwr_spy = _xirr(cashflows_spy + [(end_dt, float(dca_bench[-1]))])
 
     # ---- per-holding total return + final drifted weights (lump drift) ----------
@@ -249,7 +303,9 @@ def backtest(closes):
             "strategy": ("Buy a curated 'forever' subset of the watchlist (durable leaders + core "
                          "ETFs), equal weight, and just hold — no signals, no timing. Shown four ways: "
                          "$5,000 lump sum and $%d/mo dollar-cost averaging, each with and without a "
-                         "yearly rebalance, vs the same money in the S&P 500." % int(DCA_MONTHLY)),
+                         "yearly rebalance, vs the same money in the S&P 500. A third DCA line tilts "
+                         "each month's cash toward the names the calibrated Buy-now confidence rated "
+                         "best that day (same dollars, smarter split)." % int(DCA_MONTHLY)),
             "holdings": held, "benchmark": BENCHMARK, "base": BASE, "dca_monthly": DCA_MONTHLY,
             "schema": SCHEMA, "since": dates[0], "seeded_through": dates[-1], "years": round(yrs, 1),
             "current_basket": [{"symbol": t, "target_pct": round(100.0 / N, 1)} for t in held],
@@ -268,17 +324,20 @@ def backtest(closes):
         # dollar-cost averaging (own scale; compare via money-weighted return)
         "dca_value": [round(float(v), 2) for v in dca_val],
         "dca_value_rebal": [round(float(v), 2) for v in dca_val_re],
+        "dca_value_conf": [round(float(v), 2) for v in dca_val_cf],
         "dca_contributed": [round(float(v), 2) for v in dca_contrib],
         "dca_benchmark": [round(float(v), 2) for v in dca_bench],
         "holdings_perf": holdings_perf,
         "entry": _entry_signals(C, held),
         "stats": _stats(eq_drift, eq_rebal, bench, dca_val, dca_val_re, dca_contrib, dca_bench,
-                        dates, mwr_basket, mwr_rebal, mwr_spy, N),
+                        dates, mwr_basket, mwr_rebal, mwr_spy, N,
+                        dcac_conf=dca_val_cf, mwr_c=mwr_conf),
     }
     return state
 
 
-def _stats(eqd, eqr, bm, dcav, dcar, dcac, dcab, dates, mwr_b, mwr_r, mwr_s, n_names):
+def _stats(eqd, eqr, bm, dcav, dcar, dcac, dcab, dates, mwr_b, mwr_r, mwr_s, n_names,
+           dcac_conf=None, mwr_c=None):
     yrs = max(1e-6, (pd.to_datetime(dates[-1]) - pd.to_datetime(dates[0])).days / 365.25)
 
     def cagr(a):
@@ -329,6 +388,11 @@ def _stats(eqd, eqr, bm, dcav, dcar, dcac, dcab, dates, mwr_b, mwr_r, mwr_s, n_n
         "dca_mwr_pct": round(mwr_b * 100, 1) if mwr_b is not None else None,
         "dca_mwr_rebal_pct": round(mwr_r * 100, 1) if mwr_r is not None else None,
         "dca_benchmark_mwr_pct": round(mwr_s * 100, 1) if mwr_s is not None else None,
+        "dca_value_conf": (round(float(dcac_conf[-1]), 2) if dcac_conf is not None else None),
+        "dca_gain_conf_pct": (round((dcac_conf[-1] / contributed - 1) * 100, 1)
+                              if (dcac_conf is not None and contributed) else None),
+        "dca_mwr_conf_pct": round(mwr_c * 100, 1) if mwr_c is not None else None,
+        "dca_max_drawdown_conf_pct": (round(mdd(dcac_conf), 1) if dcac_conf is not None else None),
         "dca_max_drawdown_pct": round(mdd(dcav), 1),
     }
 
@@ -475,7 +539,7 @@ def _empty(reason):
                      "current_basket": [], "drift_weights": [], "note": reason,
                      "updated": datetime.now(timezone.utc).isoformat(timespec="seconds")},
             "dates": [], "equity": [], "equity_rebal": [], "benchmark_equity": [], "trades": [],
-            "dca_value": [], "dca_value_rebal": [], "dca_contributed": [], "dca_benchmark": [],
+            "dca_value": [], "dca_value_rebal": [], "dca_value_conf": [], "dca_contributed": [], "dca_benchmark": [],
             "holdings_perf": [], "entry": {"holdings": [], "overall": {}, "params": {}}, "stats": {}}
 
 
@@ -541,6 +605,8 @@ if __name__ == "__main__":
     print("\nDOLLAR-COST AVG  $%.0f/mo, total contributed $%s ----------------" % (DCA_MONTHLY, f"{s['dca_contributed']:,.0f}"))
     print(f"  buy & hold (drift) : ${s['dca_value']:>12,.0f}   gain {s['dca_gain_pct']:>7}%   money-weighted {s['dca_mwr_pct']}%/yr")
     print(f"  annual rebalance   : ${s['dca_value_rebal']:>12,.0f}   gain {s['dca_gain_rebal_pct']:>7}%   money-weighted {s['dca_mwr_rebal_pct']}%/yr")
+    if s.get('dca_value_conf') is not None:
+        print(f"  confidence-weighted: ${s['dca_value_conf']:>12,.0f}   gain {s['dca_gain_conf_pct']:>7}%   money-weighted {s['dca_mwr_conf_pct']}%/yr")
     print(f"  same into S&P 500  : ${s['dca_benchmark_value']:>12,.0f}   gain {s['dca_benchmark_gain_pct']:>7}%   money-weighted {s['dca_benchmark_mwr_pct']}%/yr")
     print("\nper-holding total return (lump, drift):")
     for h in st["holdings_perf"]:

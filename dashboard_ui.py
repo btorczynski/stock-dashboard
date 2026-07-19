@@ -562,10 +562,11 @@ function expandChart(btn){
   ov.innerHTML='<div class="chartmodal-inner">'+code+'<div class="chartmodal-hint">tap anywhere to close</div></div>';
   document.body.appendChild(ov);
 }
-function chartSVG(eq,bm,trades,dates,zoom,stratCol,id,ref){
+function chartSVG(eq,bm,trades,dates,zoom,stratCol,id,ref,ref2){
   const n=eq.length,W=760,H=id?230:250,padL=48,padR=10,padTop=12,padBot=24;
-  const hasRef=ref&&ref.length===n;
-  const all=hasRef?eq.concat(bm,ref):eq.concat(bm),lo=Math.max(1,Math.min(...all)),hi=Math.max(...all);
+  const hasRef=ref&&ref.length===n,hasRef2=ref2&&ref2.length===n;
+  let all=eq.concat(bm);if(hasRef)all=all.concat(ref);if(hasRef2)all=all.concat(ref2);
+  const lo=Math.max(1,Math.min(...all)),hi=Math.max(...all);
   const llo=Math.log(lo),lhi=Math.log(hi),lrng=(lhi-llo)||1;
   const xs=i=>padL+(i/Math.max(1,n-1))*(W-padL-padR), ys=v=>H-padBot-((Math.log(Math.max(1,v))-llo)/lrng)*(H-padTop-padBot);
   if(!id){st.simScale={llo,lrng,W,H,padL,padR,padTop,padBot,n};}else{st.scales=st.scales||{};st.scales[id]={llo,lrng,W,H,padL,padR,padTop,padBot,n};}
@@ -580,7 +581,7 @@ function chartSVG(eq,bm,trades,dates,zoom,stratCol,id,ref){
     +` ontouchstart="chartTouch(event,'${id||''}')" ontouchmove="chartTouch(event,'${id||''}')" ontouchend="chartTouchEnd(event,'${id||''}')" ontouchcancel="chartTouchEnd(event,'${id||''}')"`;
   const extra=`<line id="${id?id+'_guide':'eqguide'}" x1="0" y1="${padTop}" x2="0" y2="${H-padBot}" stroke="#f5a524" stroke-width="1" stroke-dasharray="2 3" style="display:none"/><circle id="${id?id+'_dot':'eqdot'}" r="4" fill="#fff" stroke="${stratCol}" stroke-width="2" style="display:none"/><line id="${id?id+'_guide2':'eqguide2'}" x1="0" y1="${padTop}" x2="0" y2="${H-padBot}" stroke="#f5a524" stroke-width="1" stroke-dasharray="2 3" style="display:none"/><circle id="${id?id+'_dot2':'eqdot2'}" r="4" fill="#fff" stroke="${stratCol}" stroke-width="2" style="display:none"/>`;
   const glow=`<polyline fill="none" stroke="${stratCol}" stroke-width="6" opacity="0.16" stroke-linejoin="round" stroke-linecap="round" points="${line(eq)}"/>`;
-  return `<svg class="eq"${hover} viewBox="0 0 ${W} ${H}" style="${id?'height:230px':''}">${defs}${yaxis}${xaxis}${area}${hasRef?`<polyline fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.85" stroke-linejoin="round" points="${line(ref)}"/>`:''}<polyline fill="none" stroke="#5a6675" stroke-width="1.6" opacity="0.9" stroke-linejoin="round" points="${line(bm)}"/>${glow}<polyline fill="none" stroke="${stratCol}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="${line(eq)}"/>${marks}${extra}</svg><div class="zoombtn" onclick="expandChart(this)" title="Enlarge">⛶</div>`;
+  return `<svg class="eq"${hover} viewBox="0 0 ${W} ${H}" style="${id?'height:230px':''}">${defs}${yaxis}${xaxis}${area}${hasRef?`<polyline fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.85" stroke-linejoin="round" points="${line(ref)}"/>`:''}${hasRef2?`<polyline fill="none" stroke="#e8c06a" stroke-width="1.7" opacity="0.95" stroke-linejoin="round" points="${line(ref2)}"/>`:''}<polyline fill="none" stroke="#5a6675" stroke-width="1.6" opacity="0.9" stroke-linejoin="round" points="${line(bm)}"/>${glow}<polyline fill="none" stroke="${stratCol}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="${line(eq)}"/>${marks}${extra}</svg><div class="zoombtn" onclick="expandChart(this)" title="Enlarge">⛶</div>`;
 }
 function windowStats(eq,bm,dates){
   const n=eq.length,wStart=eq[0],wEnd=eq[n-1],bStart=bm[0],bEnd=bm[n-1];
@@ -663,7 +664,7 @@ function renderForever(){
   const i0=zoomCut(fh.dates,zoom);
   const dates=fh.dates.slice(i0);
   const eqd=fh.equity.slice(i0),eqr=fh.equity_rebal.slice(i0),bm=fh.benchmark_equity.slice(i0),trades=fh.trades.slice(i0);
-  const dcav=fh.dca_value.slice(i0),dcar=fh.dca_value_rebal.slice(i0),dcab=fh.dca_benchmark.slice(i0);
+  const dcav=fh.dca_value.slice(i0),dcar=fh.dca_value_rebal.slice(i0),dcab=fh.dca_benchmark.slice(i0),dcacf=(fh.dca_value_conf||[]).slice(i0);
   st.views=st.views||{};
   st.views.fvLump={dates,eq:eqd,bm,trades,ref:eqr};
   st.views.fvDca={dates,eq:dcav,bm:dcab,trades:[],ref:dcar};
@@ -697,13 +698,16 @@ function renderForever(){
     <div style="display:flex;flex-wrap:wrap;gap:7px;margin:2px 0 4px">
     ${lifeChip('Buy & hold (drift)',fmtMoney(s.dca_value),(s.dca_mwr_pct!=null?s.dca_mwr_pct+'%/yr money-wtd':''),s.dca_value>=s.dca_benchmark_value)}
     ${lifeChip('Annual rebalance',fmtMoney(s.dca_value_rebal),(s.dca_mwr_rebal_pct!=null?s.dca_mwr_rebal_pct+'%/yr money-wtd':''),s.dca_value_rebal>=s.dca_benchmark_value)}
+    ${s.dca_value_conf!=null?lifeChip('Confidence-weighted',fmtMoney(s.dca_value_conf),(s.dca_mwr_conf_pct!=null?s.dca_mwr_conf_pct+'%/yr money-wtd':''),s.dca_value_conf>=s.dca_value):''}
     ${lifeChip('Same into S&P 500',fmtMoney(s.dca_benchmark_value),(s.dca_benchmark_mwr_pct!=null?s.dca_benchmark_mwr_pct+'%/yr money-wtd':''),true)}
     ${lifeChip('Total contributed',fmtMoney(s.dca_contributed),'$'+(meta.dca_monthly||250)+'/mo · cost basis',true)}
-    </div>`;
-  const dcaChart=`<div class="simgrid"><div class="chartbox">${chartSVG(dcav,dcab,[],dates,zoom,dcaCol,'fvDca',dcar)}
+    </div>
+    ${s.dca_value_conf!=null?`<div class="sub" style="margin:0 0 4px"><b style="color:#e8c06a">Confidence-weighted</b> = the same $${meta.dca_monthly||250}/mo, but each month's cash is split toward the names the calibrated Buy-now confidence (cheapness + band up-odds, falling-knife capped) rated best that day — every holding still gets a floor allocation. Band odds are graded over the full sample, so this line carries mild hindsight; treat the gap vs equal-split as an estimate.</div>`:''}`;
+  const dcaChart=`<div class="simgrid"><div class="chartbox">${chartSVG(dcav,dcab,[],dates,zoom,dcaCol,'fvDca',dcar,dcacf.length?dcacf:null)}
       <div id="fvDca_tip"></div>
       <div class="lgd"><span><i style="background:${dcaCol}"></i>Basket (drift) ${fmtMoney(dcav[dcav.length-1])}</span>
         <span><i style="background:#38bdf8"></i>Annual rebalance ${fmtMoney(dcar[dcar.length-1])}</span>
+        ${dcacf.length?`<span><i style="background:#e8c06a"></i>Confidence-weighted ${fmtMoney(dcacf[dcacf.length-1])}</span>`:''}
         <span><i style="background:#5a6675"></i>S&amp;P 500 (same schedule) ${fmtMoney(dcab[dcab.length-1])}</span></div></div>
     <div class="stats">
       <div class="stat"><div class="k">Gain on cash in</div><div class="v" style="color:${s.dca_gain_pct>=0?'var(--up)':'var(--down)'}">${fmtPctInt(s.dca_gain_pct)}</div></div>
