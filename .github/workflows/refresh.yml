@@ -1,0 +1,74 @@
+name: Refresh dashboard - GitHub Pages
+
+# Rebuilds the static snapshot and publishes it to GitHub Pages on a schedule,
+# so the dashboard stays fresh at a permanent URL - for free. No secrets needed.
+#
+# Times are UTC. The window below (12:00-23:00 UTC, Mon-Fri, every 30 min) covers
+# US pre-market through after-hours in both EST and EDT. Adjust to taste; the
+# minimum GitHub allows is every 5 minutes, and scheduled runs can be delayed a
+# few minutes under load.
+on:
+  schedule:
+    - cron: "*/30 12-23 * * 1-5"
+  workflow_dispatch:        # lets you trigger a refresh by hand from the Actions tab
+
+# Needed for the GitHub Pages deployment.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two refreshes run at once; let a newer one win.
+concurrency:
+  group: dashboard-refresh
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Day stamp (for the backtest cache key)
+        id: day
+        run: echo "stamp=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+
+      # The 20-year backtests only change once a day. Cache the *_state.json files
+      # per UTC day so only the first run each day does the heavy rebuild; the rest
+      # reuse it and just refresh live quotes - faster and gentler on Yahoo.
+      - name: Restore backtest cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            *_state.json
+          key: dashboard-state-${{ steps.day.outputs.stamp }}
+          restore-keys: |
+            dashboard-state-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build static snapshot (public/data.json + public/index.html)
+        run: python build_snapshot_static.py
+
+      - name: Upload snapshot as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
