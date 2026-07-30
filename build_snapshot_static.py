@@ -31,6 +31,15 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     t0 = time.time()
 
+    # Make Yahoo downloads resilient to 429 rate-limiting / transient errors,
+    # which are common on CI runners and otherwise produce an empty snapshot
+    # that skips publishing. Installed before any module fetches quotes.
+    try:
+        import yf_retry
+        yf_retry.install()
+    except Exception as e:
+        print(f"[warn] could not install yfinance retry wrapper: {e}", flush=True)
+
     # Import here so a failure prints a clear message in the Action log.
     import stock_dashboard as sd
     from dashboard_ui import INDEX_HTML
