@@ -47,6 +47,7 @@ import pandas as pd
 import yfinance as yf
 
 import signal_calibration as _cal
+from entry_rules import rsi as _rsi
 
 STATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "forever_state.json")
 
@@ -59,7 +60,7 @@ BENCHMARK = "SPY"
 BASE = 5000.0          # lump-sum dollars (echoes the $5k theme)
 DCA_MONTHLY = 250.0    # dollars added every month in the DCA variant
 PERIOD = "max"         # pull full history; the basket starts when the LAST name is available
-SCHEMA = 3             # bumped: confidence-weighted DCA variant added to the sim
+SCHEMA = 4             # updated RSI and historical score bands
 
 # --- "Buy now?" entry signal ------------------------------------------------
 # Even a forever holding has better and worse moments to deploy new cash. The
@@ -75,15 +76,6 @@ W_DIP, W_LIVE = 0.60, 0.40   # blend weights: cheapness vs live macro-aware sign
 
 def _clip01(x):
     return 0.0 if x < 0 else (1.0 if x > 1 else x)
-
-
-def _rsi(s, period=14):
-    """Wilder RSI on a Series (matches the dashboard's RSI)."""
-    d = s.diff()
-    up, dn = d.clip(lower=0), -d.clip(upper=0)
-    ru = up.ewm(alpha=1 / period, adjust=False).mean()
-    rd = dn.ewm(alpha=1 / period, adjust=False).mean()
-    return 100 - 100 / (1 + ru / rd.replace(0, 1e-9))
 
 
 def _dip_from(vs200, offhigh, rsi):
@@ -512,9 +504,9 @@ def refresh_entry(state, watchlist=None):
         # Falling-knife guard: while the fast-crash override is firing (−12%/10d
         # or −18%/1mo, still in free-fall), "cheap" is not yet "on sale" — hold
         # new cash back; the verdict flips to Accumulate as the flag clears.
-        if s.get("crash_flag") == "crash" and buy >= DIP_ACC:
-            buy = DIP_ACC - 1
-            h["capped"] = "fast-crash"
+        if s.get("entry_action") != "BUY":
+            buy = min(buy, DIP_ACC - 1)
+            h["capped"] = s.get("entry_reason") or "Waiting for validated entry checks"
         else:
             h.pop("capped", None)
         h["live_action"] = act or "—"
@@ -522,7 +514,7 @@ def refresh_entry(state, watchlist=None):
         h["live_score"] = round(live)
         h["live_basis"] = live_basis
         h["buy_now"] = buy
-        h["verdict"] = _band(buy)
+        h["verdict"] = _band(buy) if s.get("entry_action") == "BUY" else s.get("entry_action", "WAIT")
         scores.append(buy)
     if scores:
         avg = round(sum(scores) / len(scores))

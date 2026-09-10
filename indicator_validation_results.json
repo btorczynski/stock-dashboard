@@ -1,0 +1,3354 @@
+{
+  "run_utc": "2026-09-10T02:37:57.021319+00:00",
+  "data_start": "2000-01-01",
+  "data_end_exclusive": "2026-09-10",
+  "holdout": "2023-01-01",
+  "fee_bps_per_side": 10.0,
+  "coverage": {
+    "AAPL": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "5955d7a3b317c736bb3367a5c2adc251279220a84498eced862d9822d48d7eb5"
+    },
+    "AMZN": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "3a776e1e5e6a9610ebeae400b351153b41eb419088b7e619b711da9247d95009"
+    },
+    "BE": {
+      "rows": 2042,
+      "first": "2018-07-25",
+      "last": "2026-09-09",
+      "sha256": "8e0aa7b3caa271bfe15ab8b1f20772a35a5fc8fdbad86da4f2ea6028c4c52250"
+    },
+    "CSCO": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "b349071bda6f5bee588cf4dda2976d7e8cb96c48d4eb0e6ae6516713aa787d84"
+    },
+    "CVX": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "1d5db49302c886d5ece152c960922331fe624125b5d2ff44a3d8ee72b4cbe8ca"
+    },
+    "GLD": {
+      "rows": 5485,
+      "first": "2004-11-18",
+      "last": "2026-09-09",
+      "sha256": "faa5bab7ffc11d017773fea3a0c481d0eaabcc65a148d9617104e649a379764c"
+    },
+    "IONQ": {
+      "rows": 1427,
+      "first": "2021-01-04",
+      "last": "2026-09-09",
+      "sha256": "0754f4ba36c1ba83d0dd1a27791414c3985cc9289f29cd2399bbdada93b5cc5c"
+    },
+    "KEYS": {
+      "rows": 2989,
+      "first": "2014-10-20",
+      "last": "2026-09-09",
+      "sha256": "66297e8e1aa1d547a2b418cde32adc67b8962bc350f072a1936e056c03c64ff0"
+    },
+    "KLAC": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "67e4826aaed9b891535e48e245caae22db19b9367d93f21ff507e33bd3270c24"
+    },
+    "MU": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "2889ffd0a334a552af778119060555dfc251a3843d0971b5a66a295750c7fa66"
+    },
+    "NOK": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "19e137b7d48721748fcdb4b46cdbe9fb1f9330059d3f6c3503b194946091bba6"
+    },
+    "NVDA": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "ed4f149852eb105822d29ae43f866cf445052450c2934544a8ab16edf92a7c03"
+    },
+    "PANW": {
+      "rows": 3554,
+      "first": "2012-07-20",
+      "last": "2026-09-09",
+      "sha256": "03a5d507a7c1a7d7331e91322baec804292c11f60f71b73ae75dd3187e5b605f"
+    },
+    "PL": {
+      "rows": 1350,
+      "first": "2021-04-26",
+      "last": "2026-09-09",
+      "sha256": "8bb5d41ee14a3f5317c40f531be3859ebb9071ccb8b279d2b8fd5041224a9fa2"
+    },
+    "PLTR": {
+      "rows": 1492,
+      "first": "2020-09-30",
+      "last": "2026-09-09",
+      "sha256": "e02b78c5f567d00e4c4d8a1632d98746cbbf88b7e6a1ffccc1cdc01304d9ee3b"
+    },
+    "RDW": {
+      "rows": 1419,
+      "first": "2021-01-14",
+      "last": "2026-09-09",
+      "sha256": "a5679e4ae42f172a16f022142c0e6d8d0cd164341773a8572a6769ec119a6b0a"
+    },
+    "RGTI": {
+      "rows": 1352,
+      "first": "2021-04-22",
+      "last": "2026-09-09",
+      "sha256": "2f6b3aa4a994089e85c80877fc85c09ece065880cf9a87e3e469326cb06c1b46"
+    },
+    "RKLB": {
+      "rows": 1453,
+      "first": "2020-11-24",
+      "last": "2026-09-09",
+      "sha256": "9952a9f198f184a1e15c92959ddf491905f66d0eca0bbf59fe5f7757c173a208"
+    },
+    "SLV": {
+      "rows": 5123,
+      "first": "2006-04-28",
+      "last": "2026-09-09",
+      "sha256": "fb8ad16bf4921bfc70df67dd08fd6a201a4c0d45d72050fc00fc455cc62a5b6b"
+    },
+    "SMH": {
+      "rows": 6605,
+      "first": "2000-06-05",
+      "last": "2026-09-09",
+      "sha256": "dd36e07dea338a4f936a064c84659f676ac150033f15d37864727fa66560b5e6"
+    },
+    "SNDK": {
+      "rows": 394,
+      "first": "2025-02-13",
+      "last": "2026-09-09",
+      "sha256": "49fd26bcae300fb2d13328671e10a45abc1e75d6dd2e445bd6b8ee8d5f415040"
+    },
+    "SNOW": {
+      "rows": 1502,
+      "first": "2020-09-16",
+      "last": "2026-09-09",
+      "sha256": "0ffd4ece00c041e6f59040af5d64dc1a41b38c4ca278aefc8a3a3f5dc2a1e2df"
+    },
+    "SOXX": {
+      "rows": 6326,
+      "first": "2001-07-13",
+      "last": "2026-09-09",
+      "sha256": "69b27d643b6394b2035ca2ce6d2747b914c20d10be5d7a91a372a1a8c91f111b"
+    },
+    "SPCX": {
+      "rows": 61,
+      "first": "2026-06-12",
+      "last": "2026-09-09",
+      "sha256": "9606490e63f1bae1f94175ea3d042498791996cac1c5e71726bfed55fbdd9779"
+    },
+    "SPY": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "ac06d7817151f26c7472ee2a0e03911bf2dc8d3e94d6bb502ca6d3aa911781c8"
+    },
+    "STX": {
+      "rows": 5973,
+      "first": "2002-12-11",
+      "last": "2026-09-09",
+      "sha256": "1031ff81d5d48072f459abcf61eb9e56407ba4e3604a424f5aef9f255ae2d2e1"
+    },
+    "TSLA": {
+      "rows": 4074,
+      "first": "2010-06-29",
+      "last": "2026-09-09",
+      "sha256": "5f0d1c3f34b326ed516ffda7e15a8ed67187531b509d68efd55d79da73bc1c56"
+    },
+    "UNG": {
+      "rows": 4880,
+      "first": "2007-04-18",
+      "last": "2026-09-09",
+      "sha256": "f22f00a7a818ca5664dab5cb05c895dfa18f9684f3926545a19cb9df0b544ce5"
+    },
+    "UNH": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "f5994a7d183d8ff9c375a35327686ca31e61ba868ad826e819fb7900f6e0ef94"
+    },
+    "URA": {
+      "rows": 3983,
+      "first": "2010-11-05",
+      "last": "2026-09-09",
+      "sha256": "74169ebf4fff7938115b9cf68acecb6eacf3528e07be05abbef0c2546aa1aef7"
+    },
+    "VOO": {
+      "rows": 4024,
+      "first": "2010-09-09",
+      "last": "2026-09-09",
+      "sha256": "1b92e9e068ed7719524730511a7c087cbefd24e20a2627e10879a87ee04e5e2e"
+    },
+    "WDC": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "2947c73a03f9f4386da8350503b2e0f60477d3a398e50069d59819a25d5180ac"
+    },
+    "XLB": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "adb847c183bb4adf00718522e2764156074b95de9b4498793af34888b73a75ec"
+    },
+    "XLC": {
+      "rows": 2067,
+      "first": "2018-06-19",
+      "last": "2026-09-09",
+      "sha256": "916fe561c2f27d5cd34dc6cdd8f7748831f7b446ad23f064853ecb598af8e433"
+    },
+    "XLE": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "79fc9c0035e071010a02818755d6905c5de66b6a7384fddbcb23256fbfe711da"
+    },
+    "XLF": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "b76ed16a04bbe6a384ccc2f22560c40ea993974cad17dbbe6a6345702ade0b6a"
+    },
+    "XLI": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "278a13e34cc1963616c07db36e9c95b4c7a61d6b6ba4cffa33b52e4a063dd94e"
+    },
+    "XLK": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "b34f47b5b5489ea18cf7f19822857410c8a46e73cbb5e34c3853252a8b1ed9e2"
+    },
+    "XLP": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "a20d58b2705374da4ce45b9fe4ff4e9891b18165b7297fe38b7dd8ff791f1ff9"
+    },
+    "XLRE": {
+      "rows": 2745,
+      "first": "2015-10-08",
+      "last": "2026-09-09",
+      "sha256": "171b1c193a9fe610d8c2879d7838c8283a73f9f4f3c68e5dfb5b489a780e1851"
+    },
+    "XLU": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "aac2a2447b710dbc13398bf29c335c517cdeaa08d31f01a6771cf8cb70488ba3"
+    },
+    "XLV": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "248da6913a7eb576470bf57ae26cc1cad2eb8dcd708a899ae17a0e35b85ff799"
+    },
+    "XLY": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "d92643991b91afa32efd23c90cdcf2cb46cafdcab5a7c0863fdba7f07c1f6971"
+    },
+    "XOM": {
+      "rows": 6711,
+      "first": "2000-01-03",
+      "last": "2026-09-09",
+      "sha256": "b378cffbb9aac9cad81ea6f397bbe4956398cd27ecf0e79798a63ad19fa43cde"
+    }
+  },
+  "cohorts": {
+    "watchlist_us": {
+      "tickers": [
+        "XLK",
+        "SMH",
+        "URA",
+        "UNG",
+        "GLD",
+        "SLV",
+        "VOO",
+        "CVX",
+        "NVDA",
+        "UNH",
+        "IONQ",
+        "RDW",
+        "PL",
+        "RKLB",
+        "TSLA",
+        "CSCO",
+        "KLAC",
+        "RGTI",
+        "SOXX",
+        "SNDK",
+        "STX",
+        "AAPL",
+        "PLTR",
+        "XOM",
+        "SNOW",
+        "AMZN",
+        "BE",
+        "KEYS",
+        "PANW",
+        "MU",
+        "WDC",
+        "NOK"
+      ],
+      "excluded_no_200_bars": [
+        "SPCX"
+      ],
+      "horizons": {
+        "5": {
+          "earlier": {
+            "ALL": {
+              "observations": 74958,
+              "dates": 3272,
+              "win_pct": 52.09450625683716,
+              "mean_pct": 0.10635491867652742,
+              "median_pct": 0.16761324002928513,
+              "loss5_pct": 11.626510846073801,
+              "intraperiod_loss10_pct": 5.587128792123589,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 31167,
+              "dates": 3188,
+              "win_pct": 52.72563929797543,
+              "mean_pct": 0.1410213686460041,
+              "median_pct": 0.17460863298193185,
+              "loss5_pct": 8.002053453973753,
+              "intraperiod_loss10_pct": 3.160394006481214,
+              "matched_spread_pct": 0.0767837527314251,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 3534,
+              "dates": 1894,
+              "win_pct": 53.28239954725523,
+              "mean_pct": 0.1581399540148492,
+              "median_pct": 0.24288050615998147,
+              "loss5_pct": 8.715336728919072,
+              "intraperiod_loss10_pct": 2.9428409734012453,
+              "matched_spread_pct": -0.10495112996440013,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 40257,
+              "dates": 3272,
+              "win_pct": 51.50160220582756,
+              "mean_pct": 0.07497012693635034,
+              "median_pct": 0.14932441031128008,
+              "loss5_pct": 14.688128772635814,
+              "intraperiod_loss10_pct": 7.69804009240629,
+              "matched_spread_pct": -0.071343619448587,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          },
+          "holdout": {
+            "ALL": {
+              "observations": 28647,
+              "dates": 918,
+              "win_pct": 54.13132265158656,
+              "mean_pct": 0.9555132549912279,
+              "median_pct": 0.46902265777899466,
+              "loss5_pct": 15.74335881593186,
+              "intraperiod_loss10_pct": 11.132055712640067,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 12928,
+              "dates": 917,
+              "win_pct": 53.9371905940594,
+              "mean_pct": 0.9650868910276373,
+              "median_pct": 0.3861708653308926,
+              "loss5_pct": 12.894492574257427,
+              "intraperiod_loss10_pct": 8.222462871287128,
+              "matched_spread_pct": -0.1687994670827752,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 1251,
+              "dates": 611,
+              "win_pct": 52.1982414068745,
+              "mean_pct": 0.3921439200033441,
+              "median_pct": 0.1683159211819607,
+              "loss5_pct": 12.150279776179056,
+              "intraperiod_loss10_pct": 5.0359712230215825,
+              "matched_spread_pct": -0.4983072628795262,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 14468,
+              "dates": 918,
+              "win_pct": 54.47193807022395,
+              "mean_pct": 0.9956713329143089,
+              "median_pct": 0.594769850992638,
+              "loss5_pct": 18.59966823334255,
+              "intraperiod_loss10_pct": 14.259054465026264,
+              "matched_spread_pct": -0.12480394418963449,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          }
+        },
+        "21": {
+          "earlier": {
+            "ALL": {
+              "observations": 74958,
+              "dates": 3272,
+              "win_pct": 55.784572694042,
+              "mean_pct": 1.168419407855211,
+              "median_pct": 1.0750420952482798,
+              "loss5_pct": 23.039568825208782,
+              "intraperiod_loss10_pct": 22.93017423090264,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                0.0,
+                0.0
+              ]
+            },
+            "BUY": {
+              "observations": 31167,
+              "dates": 3188,
+              "win_pct": 57.58013283280393,
+              "mean_pct": 1.243193595799499,
+              "median_pct": 1.1831987882385153,
+              "loss5_pct": 19.090704912246927,
+              "intraperiod_loss10_pct": 16.530304488722045,
+              "matched_spread_pct": 0.23387395330983374,
+              "spread_95ci_pct": [
+                -0.23316111645275564,
+                0.6956288324917845
+              ]
+            },
+            "WAIT": {
+              "observations": 3534,
+              "dates": 1894,
+              "win_pct": 57.555178268251275,
+              "mean_pct": 1.1886942513274044,
+              "median_pct": 1.277661034858646,
+              "loss5_pct": 18.986983588002264,
+              "intraperiod_loss10_pct": 16.666666666666664,
+              "matched_spread_pct": -0.41426322256093867,
+              "spread_95ci_pct": [
+                -0.9332724405514867,
+                0.12260661143629267
+              ]
+            },
+            "AVOID": {
+              "observations": 40257,
+              "dates": 3272,
+              "win_pct": 54.239014332911054,
+              "mean_pct": 1.1087493278072604,
+              "median_pct": 0.9401777424605129,
+              "loss5_pct": 26.452542414983732,
+              "intraperiod_loss10_pct": 28.434806369078668,
+              "matched_spread_pct": -0.34347464084489965,
+              "spread_95ci_pct": [
+                -0.6846185977150525,
+                -0.015410098572174312
+              ]
+            }
+          },
+          "holdout": {
+            "ALL": {
+              "observations": 28135,
+              "dates": 902,
+              "win_pct": 59.733428114448195,
+              "mean_pct": 4.91242033735551,
+              "median_pct": 2.267513457330006,
+              "loss5_pct": 23.749777856762037,
+              "intraperiod_loss10_pct": 29.90581126710503,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                0.0,
+                0.0
+              ]
+            },
+            "BUY": {
+              "observations": 12778,
+              "dates": 901,
+              "win_pct": 61.316324933479414,
+              "mean_pct": 4.96300703835544,
+              "median_pct": 2.3629690283990423,
+              "loss5_pct": 21.23180466426671,
+              "intraperiod_loss10_pct": 24.90217561433714,
+              "matched_spread_pct": -0.6372592047520382,
+              "spread_95ci_pct": [
+                -2.00710931440619,
+                0.46919227458022283
+              ]
+            },
+            "WAIT": {
+              "observations": 1227,
+              "dates": 597,
+              "win_pct": 60.22819885900571,
+              "mean_pct": 3.275839601202731,
+              "median_pct": 1.8475323535304566,
+              "loss5_pct": 20.700896495517522,
+              "intraperiod_loss10_pct": 22.819885900570497,
+              "matched_spread_pct": -2.0482941334408515,
+              "spread_95ci_pct": [
+                -4.151548080933964,
+                -0.10080078211635395
+              ]
+            },
+            "AVOID": {
+              "observations": 14130,
+              "dates": 902,
+              "win_pct": 58.259023354564754,
+              "mean_pct": 5.008788893468911,
+              "median_pct": 2.2254907877760632,
+              "loss5_pct": 26.291578202406228,
+              "intraperiod_loss10_pct": 35.046001415428165,
+              "matched_spread_pct": -0.15544530036867488,
+              "spread_95ci_pct": [
+                -1.4904515898650106,
+                1.6011519971752948
+              ]
+            }
+          }
+        },
+        "63": {
+          "earlier": {
+            "ALL": {
+              "observations": 74958,
+              "dates": 3272,
+              "win_pct": 59.41193735158355,
+              "mean_pct": 4.010988268631563,
+              "median_pct": 3.160754825014367,
+              "loss5_pct": 28.037034072413885,
+              "intraperiod_loss10_pct": 41.13103337869207,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 31167,
+              "dates": 3188,
+              "win_pct": 62.887027946225174,
+              "mean_pct": 4.668798775430264,
+              "median_pct": 3.6367658657561863,
+              "loss5_pct": 23.36124747328906,
+              "intraperiod_loss10_pct": 33.3076651586614,
+              "matched_spread_pct": 0.6756514779186847,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 3534,
+              "dates": 1894,
+              "win_pct": 63.89360498019242,
+              "mean_pct": 3.7811828586659546,
+              "median_pct": 3.7646611762693905,
+              "loss5_pct": 23.599320882852293,
+              "intraperiod_loss10_pct": 34.352009054895305,
+              "matched_spread_pct": -0.6022127410898864,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 40257,
+              "dates": 3272,
+              "win_pct": 56.32809200884318,
+              "mean_pct": 3.521884566254918,
+              "median_pct": 2.5612549095512582,
+              "loss5_pct": 32.04660059120153,
+              "intraperiod_loss10_pct": 47.7829942618675,
+              "matched_spread_pct": -0.904176958461537,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          },
+          "holdout": {
+            "ALL": {
+              "observations": 26791,
+              "dates": 860,
+              "win_pct": 65.35030420663655,
+              "mean_pct": 17.439712324820576,
+              "median_pct": 6.75867945474824,
+              "loss5_pct": 25.135306632824456,
+              "intraperiod_loss10_pct": 45.97812698294203,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 12347,
+              "dates": 859,
+              "win_pct": 66.8259496233903,
+              "mean_pct": 14.595368560623657,
+              "median_pct": 6.084696002192502,
+              "loss5_pct": 22.475095164817365,
+              "intraperiod_loss10_pct": 41.20839070219486,
+              "matched_spread_pct": -3.8908180386468425,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 1179,
+              "dates": 566,
+              "win_pct": 65.0551314673452,
+              "mean_pct": 11.742376023978492,
+              "median_pct": 5.5156320640089795,
+              "loss5_pct": 26.547921967769295,
+              "intraperiod_loss10_pct": 41.39100932994062,
+              "matched_spread_pct": -4.87643216352592,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 13265,
+              "dates": 860,
+              "win_pct": 64.0030154542028,
+              "mean_pct": 20.593596377231602,
+              "median_pct": 7.704897460563087,
+              "loss5_pct": 27.485865058424423,
+              "intraperiod_loss10_pct": 50.82548058801357,
+              "matched_spread_pct": 4.237242270791032,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          }
+        },
+        "252": {
+          "earlier": {
+            "ALL": {
+              "observations": 74958,
+              "dates": 3272,
+              "win_pct": 66.99351636916673,
+              "mean_pct": 21.93199932959171,
+              "median_pct": 13.510028901268301,
+              "loss5_pct": 27.471383975026015,
+              "intraperiod_loss10_pct": 60.29109634728781,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 31167,
+              "dates": 3188,
+              "win_pct": 73.11579555298874,
+              "mean_pct": 23.941137126251366,
+              "median_pct": 16.524968971863863,
+              "loss5_pct": 20.993358359803636,
+              "intraperiod_loss10_pct": 53.44755671062341,
+              "matched_spread_pct": 1.83163299896104,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 3534,
+              "dates": 1894,
+              "win_pct": 69.89247311827957,
+              "mean_pct": 16.795385776548507,
+              "median_pct": 12.550079895191669,
+              "loss5_pct": 23.231465761177137,
+              "intraperiod_loss10_pct": 55.291454442558006,
+              "matched_spread_pct": -1.6380880907591409,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 40257,
+              "dates": 3272,
+              "win_pct": 61.99915542638548,
+              "mean_pct": 20.827445949756235,
+              "median_pct": 10.760823877100979,
+              "loss5_pct": 32.85888168517276,
+              "intraperiod_loss10_pct": 66.02826837568621,
+              "matched_spread_pct": -3.3018219406140505,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          },
+          "holdout": {
+            "ALL": {
+              "observations": 20801,
+              "dates": 671,
+              "win_pct": 81.76529974520456,
+              "mean_pct": 99.14635909809823,
+              "median_pct": 33.001022242118424,
+              "loss5_pct": 14.590644680544203,
+              "intraperiod_loss10_pct": 58.107783279650015,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 8888,
+              "dates": 670,
+              "win_pct": 83.07830783078309,
+              "mean_pct": 68.49829844496146,
+              "median_pct": 27.696892216695844,
+              "loss5_pct": 13.23132313231323,
+              "intraperiod_loss10_pct": 54.92799279927992,
+              "matched_spread_pct": -38.88568498016486,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 939,
+              "dates": 438,
+              "win_pct": 84.02555910543131,
+              "mean_pct": 60.221557468800235,
+              "median_pct": 27.855978664757263,
+              "loss5_pct": 11.821086261980831,
+              "intraperiod_loss10_pct": 60.17039403620873,
+              "matched_spread_pct": -34.11558563948265,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 10974,
+              "dates": 671,
+              "win_pct": 80.50847457627118,
+              "mean_pct": 127.29929802784036,
+              "median_pct": 39.634392061503185,
+              "loss5_pct": 15.928558410789137,
+              "intraperiod_loss10_pct": 60.5066520867505,
+              "matched_spread_pct": 43.52805146825242,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          }
+        }
+      },
+      "yearly": {
+        "2010": {
+          "BUY": {
+            "observations": 1828,
+            "dates": 243,
+            "win_pct": 61.10503282275711,
+            "mean_pct": 0.6040320368508025,
+            "median_pct": 2.326521411295923,
+            "loss5_pct": 21.99124726477024,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.13411276947508233,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 232,
+            "dates": 130,
+            "win_pct": 46.55172413793103,
+            "mean_pct": -0.18635140700658104,
+            "median_pct": -0.5197070346176003,
+            "loss5_pct": 25.0,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.581384152858011,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 2476,
+            "dates": 252,
+            "win_pct": 58.23909531502424,
+            "mean_pct": 1.574761513742029,
+            "median_pct": 2.153249204064289,
+            "loss5_pct": 25.565428109854604,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.3611009356248738,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2011": {
+          "BUY": {
+            "observations": 1607,
+            "dates": 249,
+            "win_pct": 45.55071561916615,
+            "mean_pct": -1.3867551710552453,
+            "median_pct": -0.9289614492175025,
+            "loss5_pct": 32.296204107031734,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.1797111899025963,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 199,
+            "dates": 132,
+            "win_pct": 36.68341708542713,
+            "mean_pct": -2.292885667887091,
+            "median_pct": -2.6546767545077343,
+            "loss5_pct": 32.663316582914575,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.6184010264408958,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 3138,
+            "dates": 252,
+            "win_pct": 55.226258763543655,
+            "mean_pct": 1.1603432991193925,
+            "median_pct": 1.1476115032732492,
+            "loss5_pct": 27.182919056724025,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.14983845692462086,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2012": {
+          "BUY": {
+            "observations": 1919,
+            "dates": 242,
+            "win_pct": 51.1724856696196,
+            "mean_pct": 0.40311812137590347,
+            "median_pct": 0.22863233027166086,
+            "loss5_pct": 22.66805627931214,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.9613425057860463,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 182,
+            "dates": 122,
+            "win_pct": 39.010989010989015,
+            "mean_pct": -1.541278360153686,
+            "median_pct": -1.7724848081190792,
+            "loss5_pct": 37.91208791208791,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.5965004338842994,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 3149,
+            "dates": 250,
+            "win_pct": 54.33470943156558,
+            "mean_pct": 1.3972937951157922,
+            "median_pct": 0.8861469033582203,
+            "loss5_pct": 24.10288980628771,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.234914325199737,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2013": {
+          "BUY": {
+            "observations": 3052,
+            "dates": 252,
+            "win_pct": 66.6775884665793,
+            "mean_pct": 3.7322327695854245,
+            "median_pct": 1.9481667052727358,
+            "loss5_pct": 8.551769331585845,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 1.5913532529537637,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 317,
+            "dates": 180,
+            "win_pct": 69.71608832807571,
+            "mean_pct": 2.6119164327399793,
+            "median_pct": 2.18690461308515,
+            "loss5_pct": 9.46372239747634,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.9819801564970152,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 2088,
+            "dates": 252,
+            "win_pct": 53.35249042145593,
+            "mean_pct": 1.1041187929105452,
+            "median_pct": 0.6269176076338034,
+            "loss5_pct": 25.143678160919542,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.7647950197112197,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2014": {
+          "BUY": {
+            "observations": 3019,
+            "dates": 252,
+            "win_pct": 53.22954620735343,
+            "mean_pct": 0.7647729794891631,
+            "median_pct": 0.3839791699545847,
+            "loss5_pct": 16.826763829082477,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.6031835062762021,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 377,
+            "dates": 174,
+            "win_pct": 66.84350132625994,
+            "mean_pct": 2.1811871230637316,
+            "median_pct": 2.774562678098702,
+            "loss5_pct": 15.119363395225463,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.1087183032571126,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 2148,
+            "dates": 252,
+            "win_pct": 56.61080074487895,
+            "mean_pct": 1.4481317211271596,
+            "median_pct": 1.2591124043154989,
+            "loss5_pct": 20.62383612662942,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.5250210740796913,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2015": {
+          "BUY": {
+            "observations": 1564,
+            "dates": 246,
+            "win_pct": 43.8618925831202,
+            "mean_pct": -0.5445215073462024,
+            "median_pct": -0.7116666368520597,
+            "loss5_pct": 23.209718670076725,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 1.196635502637831,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 294,
+            "dates": 144,
+            "win_pct": 49.65986394557823,
+            "mean_pct": -0.969243709353218,
+            "median_pct": -0.10200720496363336,
+            "loss5_pct": 25.510204081632654,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.04931353688696149,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 3790,
+            "dates": 252,
+            "win_pct": 42.53298153034301,
+            "mean_pct": -1.3996876156358007,
+            "median_pct": -1.4144764392106268,
+            "loss5_pct": 32.849604221635886,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.6825146281626745,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2016": {
+          "BUY": {
+            "observations": 2452,
+            "dates": 239,
+            "win_pct": 66.27243066884176,
+            "mean_pct": 2.4210523658668484,
+            "median_pct": 1.943923735084463,
+            "loss5_pct": 11.174551386623165,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.5533701443213157,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 246,
+            "dates": 140,
+            "win_pct": 62.601626016260155,
+            "mean_pct": 1.6245854643191886,
+            "median_pct": 1.7314882324537484,
+            "loss5_pct": 10.569105691056912,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.3052804188858431,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 3098,
+            "dates": 252,
+            "win_pct": 64.5255003227889,
+            "mean_pct": 2.9528660991543125,
+            "median_pct": 2.8439301002434303,
+            "loss5_pct": 18.786313750806972,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.26039868269472977,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2017": {
+          "BUY": {
+            "observations": 3329,
+            "dates": 251,
+            "win_pct": 66.77680985280865,
+            "mean_pct": 2.149689023915725,
+            "median_pct": 2.2239225676967456,
+            "loss5_pct": 11.65515169720637,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.04569312838119433,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 349,
+            "dates": 192,
+            "win_pct": 65.61604584527221,
+            "mean_pct": 3.1067825128044095,
+            "median_pct": 2.441603560442318,
+            "loss5_pct": 10.888252148997136,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.6635836962126455,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 2095,
+            "dates": 251,
+            "win_pct": 60.381861575178995,
+            "mean_pct": 2.0755730271986725,
+            "median_pct": 1.6584490125374662,
+            "loss5_pct": 14.844868735083534,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.3686443288544756,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2018": {
+          "BUY": {
+            "observations": 2478,
+            "dates": 247,
+            "win_pct": 44.51170298627925,
+            "mean_pct": -1.0419467716569428,
+            "median_pct": -0.7144779494738407,
+            "loss5_pct": 25.70621468926554,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.6168160794084155,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 410,
+            "dates": 176,
+            "win_pct": 50.0,
+            "mean_pct": 0.6037405311069031,
+            "median_pct": -0.0032295428733342124,
+            "loss5_pct": 17.073170731707318,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.1016402105789661,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 2885,
+            "dates": 251,
+            "win_pct": 50.22530329289429,
+            "mean_pct": 0.18539433396147095,
+            "median_pct": 0.03183152454127036,
+            "loss5_pct": 24.332755632582323,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.3157000825370576,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2019": {
+          "BUY": {
+            "observations": 2450,
+            "dates": 246,
+            "win_pct": 61.183673469387756,
+            "mean_pct": 1.9280626401446157,
+            "median_pct": 1.9892016129273604,
+            "loss5_pct": 16.28571428571429,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.04509611404526449,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 216,
+            "dates": 126,
+            "win_pct": 64.81481481481481,
+            "mean_pct": 1.975436116395826,
+            "median_pct": 2.6129138333740087,
+            "loss5_pct": 12.037037037037036,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -2.3141297943050434,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 3293,
+            "dates": 252,
+            "win_pct": 61.9192225933799,
+            "mean_pct": 2.836629960438869,
+            "median_pct": 2.3635455555343965,
+            "loss5_pct": 19.829942301852412,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.5511091131558937,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2020": {
+          "BUY": {
+            "observations": 2948,
+            "dates": 238,
+            "win_pct": 66.5875169606513,
+            "mean_pct": 3.5596201273420864,
+            "median_pct": 3.3747212600175214,
+            "loss5_pct": 18.181818181818183,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.4066969041514334,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 203,
+            "dates": 109,
+            "win_pct": 63.05418719211823,
+            "mean_pct": 3.5925460845089927,
+            "median_pct": 3.109588794578322,
+            "loss5_pct": 13.793103448275861,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.07549036457600534,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 2921,
+            "dates": 253,
+            "win_pct": 61.24614857925368,
+            "mean_pct": 4.47588380181562,
+            "median_pct": 3.4768563794587815,
+            "loss5_pct": 24.68332762752482,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.1036395121962423,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2021": {
+          "BUY": {
+            "observations": 3550,
+            "dates": 252,
+            "win_pct": 55.29577464788732,
+            "mean_pct": 0.7686022047345261,
+            "median_pct": 0.9845303986704912,
+            "loss5_pct": 24.338028169014084,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.3734143726267127,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 360,
+            "dates": 179,
+            "win_pct": 70.55555555555556,
+            "mean_pct": 3.5672438724014945,
+            "median_pct": 4.040126924874842,
+            "loss5_pct": 15.833333333333332,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.20793096664827662,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 2561,
+            "dates": 252,
+            "win_pct": 60.79656384224912,
+            "mean_pct": 2.8002425793900505,
+            "median_pct": 2.8472456502848242,
+            "loss5_pct": 23.233112065599375,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.44892441466759636,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2022": {
+          "BUY": {
+            "observations": 971,
+            "dates": 231,
+            "win_pct": 42.32749742533471,
+            "mean_pct": -2.2733869934081365,
+            "median_pct": -2.066122762384337,
+            "loss5_pct": 37.48712667353244,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 1.7827825721181756,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 149,
+            "dates": 90,
+            "win_pct": 35.57046979865772,
+            "mean_pct": -3.732141431249191,
+            "median_pct": -4.538914403817095,
+            "loss5_pct": 48.322147651006716,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.8429789334077903,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 6615,
+            "dates": 251,
+            "win_pct": 43.97581254724112,
+            "mean_pct": -1.668066784058956,
+            "median_pct": -1.891578904789204,
+            "loss5_pct": 39.71277399848828,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.46490584802166324,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2023": {
+          "BUY": {
+            "observations": 2849,
+            "dates": 249,
+            "win_pct": 58.125658125658134,
+            "mean_pct": 1.6414469518847286,
+            "median_pct": 1.639008610302617,
+            "loss5_pct": 21.235521235521233,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.0070476356355043,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 320,
+            "dates": 145,
+            "win_pct": 53.43750000000001,
+            "mean_pct": 1.6112637772695053,
+            "median_pct": 0.5536108914641846,
+            "loss5_pct": 22.5,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.3710764002333612,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 4581,
+            "dates": 250,
+            "win_pct": 56.47238594193408,
+            "mean_pct": 3.324412175944422,
+            "median_pct": 1.5545007667876032,
+            "loss5_pct": 25.081859855926652,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.20511874753846498,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2024": {
+          "BUY": {
+            "observations": 3736,
+            "dates": 252,
+            "win_pct": 59.63597430406852,
+            "mean_pct": 5.468209923233664,
+            "median_pct": 1.8707905711023431,
+            "loss5_pct": 19.646680942184155,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.7451871776740426,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 396,
+            "dates": 187,
+            "win_pct": 64.8989898989899,
+            "mean_pct": 3.4923529439616345,
+            "median_pct": 2.5737904230154873,
+            "loss5_pct": 17.67676767676768,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -3.5198232969878633,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 3680,
+            "dates": 252,
+            "win_pct": 60.27173913043479,
+            "mean_pct": 6.699539266356107,
+            "median_pct": 2.38656585818815,
+            "loss5_pct": 22.33695652173913,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 2.1664309029104567,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2025": {
+          "BUY": {
+            "observations": 3943,
+            "dates": 250,
+            "win_pct": 66.21861526756277,
+            "mean_pct": 5.897091623052719,
+            "median_pct": 3.059184899105305,
+            "loss5_pct": 19.40147096119706,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.6065653506941824,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 344,
+            "dates": 172,
+            "win_pct": 61.627906976744185,
+            "mean_pct": 3.4214044493797524,
+            "median_pct": 1.5979694039673809,
+            "loss5_pct": 21.22093023255814,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -4.054671019476145,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 3486,
+            "dates": 250,
+            "win_pct": 62.10556511761332,
+            "mean_pct": 6.452971862398589,
+            "median_pct": 4.012317473629956,
+            "loss5_pct": 27.91164658634538,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.1223486567612062,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2026": {
+          "BUY": {
+            "observations": 2250,
+            "dates": 150,
+            "win_pct": 59.55555555555555,
+            "mean_pct": 6.6930475676837204,
+            "median_pct": 3.337282181789736,
+            "loss5_pct": 27.066666666666666,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 1.7734188282603895,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 167,
+            "dates": 93,
+            "win_pct": 59.2814371257485,
+            "mean_pct": 5.65219093146148,
+            "median_pct": 2.640612989160762,
+            "loss5_pct": 23.353293413173652,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.8491687762215231,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 2383,
+            "dates": 150,
+            "win_pct": 52.95845572807386,
+            "mean_pct": 3.523160081494909,
+            "median_pct": 1.063502365249569,
+            "loss5_pct": 32.354175409148134,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -3.045631807735297,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        }
+      },
+      "individual_filters": {
+        "above_50_day": {
+          "observations": 17352,
+          "dates": 902,
+          "win_pct": 60.31581373905025,
+          "mean_pct": 5.294511231357308,
+          "median_pct": 2.302320735381369,
+          "loss5_pct": 23.57653296449977,
+          "intraperiod_loss10_pct": 28.37136929460581,
+          "matched_spread_pct": 0.021607521350208124,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "20_above_50_day": {
+          "observations": 17313,
+          "dates": 902,
+          "win_pct": 59.27915439265292,
+          "mean_pct": 4.847742159519392,
+          "median_pct": 2.081341616675858,
+          "loss5_pct": 24.247675157396177,
+          "intraperiod_loss10_pct": 29.775313348350952,
+          "matched_spread_pct": -0.2626387526085851,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "positive_21_day_momentum": {
+          "observations": 16921,
+          "dates": 902,
+          "win_pct": 60.20329767744224,
+          "mean_pct": 5.396605389569982,
+          "median_pct": 2.3148556384887886,
+          "loss5_pct": 23.834288753619763,
+          "intraperiod_loss10_pct": 28.31983925299923,
+          "matched_spread_pct": 0.26345546138324016,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "rsi_above_50": {
+          "observations": 16991,
+          "dates": 902,
+          "win_pct": 60.326054970278385,
+          "mean_pct": 5.340531294725411,
+          "median_pct": 2.338183417644868,
+          "loss5_pct": 23.54187511035254,
+          "intraperiod_loss10_pct": 28.214937319757517,
+          "matched_spread_pct": -0.005237464705618421,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "rsi_oversold_below_30": {
+          "observations": 639,
+          "dates": 359,
+          "win_pct": 69.79655712050078,
+          "mean_pct": 6.466271866769034,
+          "median_pct": 5.116427986540306,
+          "loss5_pct": 16.275430359937403,
+          "intraperiod_loss10_pct": 25.039123630672925,
+          "matched_spread_pct": 0.030911101614349533,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "above_200_day": {
+          "observations": 20063,
+          "dates": 902,
+          "win_pct": 59.93620096695409,
+          "mean_pct": 4.904327777128312,
+          "median_pct": 2.2039853771544937,
+          "loss5_pct": 23.02746349000648,
+          "intraperiod_loss10_pct": 28.38060110651448,
+          "matched_spread_pct": 0.031228508572778833,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "within_20pct_of_high": {
+          "observations": 19221,
+          "dates": 902,
+          "win_pct": 61.14145986160969,
+          "mean_pct": 4.296710878462179,
+          "median_pct": 2.2381714062187807,
+          "loss5_pct": 20.040580614952397,
+          "intraperiod_loss10_pct": 22.787576088653037,
+          "matched_spread_pct": -0.8116563189655149,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "no_fast_crash": {
+          "observations": 25479,
+          "dates": 902,
+          "win_pct": 60.16327171396052,
+          "mean_pct": 4.907536836727301,
+          "median_pct": 2.2979635107267526,
+          "loss5_pct": 23.007182385493934,
+          "intraperiod_loss10_pct": 27.82683778798226,
+          "matched_spread_pct": -0.14295412781141956,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "no_volatility_spike": {
+          "observations": 27541,
+          "dates": 902,
+          "win_pct": 59.616571656802584,
+          "mean_pct": 4.769442757857974,
+          "median_pct": 2.244438291858941,
+          "loss5_pct": 23.789985839294143,
+          "intraperiod_loss10_pct": 29.962601212737372,
+          "matched_spread_pct": -0.11395285942532724,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "core_buy_without_sector": {
+          "observations": 12909,
+          "dates": 902,
+          "win_pct": 61.391277403362,
+          "mean_pct": 4.945709099907695,
+          "median_pct": 2.3608656104185277,
+          "loss5_pct": 21.194515454334187,
+          "intraperiod_loss10_pct": 24.773413897280967,
+          "matched_spread_pct": -0.5307139047168197,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        }
+      },
+      "portfolios": {
+        "earlier_and_recent": {
+          "all": {
+            "cagr_pct": 23.201874080333873,
+            "total_pct": 3146.422232950825,
+            "max_drawdown_pct": -38.691842126113386,
+            "invested_month_pct": 100.0,
+            "months": 201
+          },
+          "buy": {
+            "cagr_pct": 24.584527236329645,
+            "total_pct": 3810.611061190025,
+            "max_drawdown_pct": -36.90697709707762,
+            "invested_month_pct": 97.51243781094527,
+            "months": 201
+          },
+          "sma200": {
+            "cagr_pct": 24.91200095150039,
+            "total_pct": 3985.635488358437,
+            "max_drawdown_pct": -37.041230492563685,
+            "invested_month_pct": 100.0,
+            "months": 201
+          },
+          "spy_buy_hold": {
+            "cagr_pct": 14.151020709974581,
+            "total_pct": 809.2950424553246,
+            "max_drawdown_pct": -32.04897187634762
+          }
+        },
+        "holdout": {
+          "all": {
+            "cagr_pct": 71.84600648706969,
+            "total_pct": 634.3103974894008,
+            "max_drawdown_pct": -30.44304379963464,
+            "invested_month_pct": 100.0,
+            "months": 45
+          },
+          "buy": {
+            "cagr_pct": 68.47183896786346,
+            "total_pct": 582.600023393338,
+            "max_drawdown_pct": -24.866087755736576,
+            "invested_month_pct": 100.0,
+            "months": 45
+          },
+          "sma200": {
+            "cagr_pct": 66.74771006253923,
+            "total_pct": 557.226949972845,
+            "max_drawdown_pct": -31.458035850898337,
+            "invested_month_pct": 100.0,
+            "months": 45
+          },
+          "spy_buy_hold": {
+            "cagr_pct": 21.92122621618764,
+            "total_pct": 107.48146044269475,
+            "max_drawdown_pct": -19.76622274935844
+          }
+        }
+      },
+      "probability_validation": {
+        "all_walk_forward": {
+          "n": 69023,
+          "brier": 0.24416847617251103,
+          "baseline_brier": 0.24383199709106984,
+          "skill_pct": -0.1379962783619071,
+          "error_improvement_95ci": [
+            -0.0023885870839460426,
+            0.0012919445418525652
+          ],
+          "reliability": [
+            {
+              "band": "buy",
+              "n": 9400,
+              "predicted_up_pct": 59.903305325452806,
+              "actual_up_pct": 61.15957446808511
+            },
+            {
+              "band": "hold",
+              "n": 11235,
+              "predicted_up_pct": 53.26258254347395,
+              "actual_up_pct": 57.67690253671562
+            },
+            {
+              "band": "sell",
+              "n": 6399,
+              "predicted_up_pct": 58.958726964201325,
+              "actual_up_pct": 59.86872948898265
+            },
+            {
+              "band": "strong_buy",
+              "n": 21876,
+              "predicted_up_pct": 57.562158787092535,
+              "actual_up_pct": 60.93435728652404
+            },
+            {
+              "band": "strong_sell",
+              "n": 20113,
+              "predicted_up_pct": 54.9088496917116,
+              "actual_up_pct": 58.061949982598314
+            }
+          ]
+        },
+        "holdout": {
+          "n": 27993,
+          "brier": 0.24392245819249156,
+          "baseline_brier": 0.24565654652220262,
+          "skill_pct": 0.705899498409801,
+          "error_improvement_95ci": [
+            -0.0015698897606904352,
+            0.005564950767405902
+          ],
+          "reliability": [
+            {
+              "band": "buy",
+              "n": 3713,
+              "predicted_up_pct": 60.13506525090023,
+              "actual_up_pct": 61.35200646377592
+            },
+            {
+              "band": "hold",
+              "n": 4504,
+              "predicted_up_pct": 51.916939727062896,
+              "actual_up_pct": 57.97069271758437
+            },
+            {
+              "band": "sell",
+              "n": 2527,
+              "predicted_up_pct": 57.8850413204213,
+              "actual_up_pct": 57.93430945785516
+            },
+            {
+              "band": "strong_buy",
+              "n": 9078,
+              "predicted_up_pct": 57.839199312585556,
+              "actual_up_pct": 62.29345670852611
+            },
+            {
+              "band": "strong_sell",
+              "n": 8171,
+              "predicted_up_pct": 53.7975795451999,
+              "actual_up_pct": 58.74433973809815
+            }
+          ]
+        }
+      }
+    },
+    "sector_control": {
+      "tickers": [
+        "XLK",
+        "XLF",
+        "XLV",
+        "XLY",
+        "XLI",
+        "XLP",
+        "XLE",
+        "XLB",
+        "XLU"
+      ],
+      "excluded_no_200_bars": [],
+      "horizons": {
+        "5": {
+          "earlier": {
+            "ALL": {
+              "observations": 29448,
+              "dates": 3272,
+              "win_pct": 53.66748166259169,
+              "mean_pct": 0.051222862968960024,
+              "median_pct": 0.17762796132406722,
+              "loss5_pct": 3.52146155935887,
+              "intraperiod_loss10_pct": 1.0255365389839717,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 16681,
+              "dates": 3010,
+              "win_pct": 51.17199208680535,
+              "mean_pct": -0.08763258655735073,
+              "median_pct": 0.05295121080977072,
+              "loss5_pct": 1.9243450632456087,
+              "intraperiod_loss10_pct": 0.4975720880043163,
+              "matched_spread_pct": 0.02178348248118439,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 2391,
+              "dates": 1462,
+              "win_pct": 58.511083228774574,
+              "mean_pct": 0.15085893000380218,
+              "median_pct": 0.3524472912781018,
+              "loss5_pct": 2.6348808030112925,
+              "intraperiod_loss10_pct": 0.5437055625261397,
+              "matched_spread_pct": 0.0329111376114698,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 10376,
+              "dates": 2743,
+              "win_pct": 56.56322282189669,
+              "mean_pct": 0.25149444327621545,
+              "median_pct": 0.4511073989673209,
+              "loss5_pct": 6.29336931380108,
+              "intraperiod_loss10_pct": 1.9853508095605241,
+              "matched_spread_pct": -0.054492314192444366,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          },
+          "holdout": {
+            "ALL": {
+              "observations": 8262,
+              "dates": 918,
+              "win_pct": 52.868554829339146,
+              "mean_pct": 0.10658682920714325,
+              "median_pct": 0.16020439987572965,
+              "loss5_pct": 2.214960058097313,
+              "intraperiod_loss10_pct": 0.4357298474945534,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 4464,
+              "dates": 880,
+              "win_pct": 49.75358422939068,
+              "mean_pct": -0.07558727505456746,
+              "median_pct": -0.00872400320224842,
+              "loss5_pct": 1.9265232974910396,
+              "intraperiod_loss10_pct": 0.2240143369175627,
+              "matched_spread_pct": -0.0750214777542926,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 811,
+              "dates": 511,
+              "win_pct": 54.13070283600493,
+              "mean_pct": 0.07908333917765328,
+              "median_pct": 0.15161864914610135,
+              "loss5_pct": 1.726263871763255,
+              "intraperiod_loss10_pct": 0.2466091245376079,
+              "matched_spread_pct": -0.17765918352755003,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 2987,
+              "dates": 849,
+              "win_pct": 57.181118178774696,
+              "mean_pct": 0.38630913648474396,
+              "median_pct": 0.4693710992254463,
+              "loss5_pct": 2.778707733511885,
+              "intraperiod_loss10_pct": 0.8034817542684968,
+              "matched_spread_pct": 0.11883095530155115,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          }
+        },
+        "21": {
+          "earlier": {
+            "ALL": {
+              "observations": 29448,
+              "dates": 3272,
+              "win_pct": 61.49483835914153,
+              "mean_pct": 0.8727958598168507,
+              "median_pct": 1.1685806074639649,
+              "loss5_pct": 10.408177125781037,
+              "intraperiod_loss10_pct": 7.464004346644934,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                0.0,
+                0.0
+              ]
+            },
+            "BUY": {
+              "observations": 16681,
+              "dates": 3010,
+              "win_pct": 58.06006834122655,
+              "mean_pct": 0.3023200150807019,
+              "median_pct": 0.7003052237317897,
+              "loss5_pct": 9.166117139260237,
+              "intraperiod_loss10_pct": 5.443318745878544,
+              "matched_spread_pct": -0.12759924958129268,
+              "spread_95ci_pct": [
+                -0.3190653289448159,
+                0.07842337742846696
+              ]
+            },
+            "WAIT": {
+              "observations": 2391,
+              "dates": 1462,
+              "win_pct": 69.30154746967796,
+              "mean_pct": 1.3037415294822174,
+              "median_pct": 1.7756558975202452,
+              "loss5_pct": 7.988289418653283,
+              "intraperiod_loss10_pct": 6.148055207026349,
+              "matched_spread_pct": 0.39852068285578335,
+              "spread_95ci_pct": [
+                0.0646235592347383,
+                0.7259435303156406
+              ]
+            },
+            "AVOID": {
+              "observations": 10376,
+              "dates": 2743,
+              "win_pct": 65.21781033153431,
+              "mean_pct": 1.690617416281173,
+              "median_pct": 2.1213137957065697,
+              "loss5_pct": 12.962606013878181,
+              "intraperiod_loss10_pct": 11.015805705474172,
+              "matched_spread_pct": -0.09275616628838243,
+              "spread_95ci_pct": [
+                -0.5610811535639036,
+                0.36749920379471307
+              ]
+            }
+          },
+          "holdout": {
+            "ALL": {
+              "observations": 8118,
+              "dates": 902,
+              "win_pct": 58.80758807588076,
+              "mean_pct": 1.0670523048106089,
+              "median_pct": 1.0169113910289296,
+              "loss5_pct": 8.770633160877063,
+              "intraperiod_loss10_pct": 4.188223700418822,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                0.0,
+                0.0
+              ]
+            },
+            "BUY": {
+              "observations": 4362,
+              "dates": 864,
+              "win_pct": 54.90600641907382,
+              "mean_pct": 0.675286675855151,
+              "median_pct": 0.5100219486089963,
+              "loss5_pct": 9.399358092618066,
+              "intraperiod_loss10_pct": 3.278312700596057,
+              "matched_spread_pct": -0.33782518205382617,
+              "spread_95ci_pct": [
+                -0.6565999709165211,
+                -0.040965514950353984
+              ]
+            },
+            "WAIT": {
+              "observations": 792,
+              "dates": 496,
+              "win_pct": 56.313131313131315,
+              "mean_pct": 0.4550470519456111,
+              "median_pct": 0.5959236925804801,
+              "loss5_pct": 9.722222222222223,
+              "intraperiod_loss10_pct": 3.1565656565656566,
+              "matched_spread_pct": -0.5378044518382638,
+              "spread_95ci_pct": [
+                -0.9521140548902555,
+                -0.1293951249797739
+              ]
+            },
+            "AVOID": {
+              "observations": 2964,
+              "dates": 833,
+              "win_pct": 65.21592442645074,
+              "mean_pct": 1.8071298465693089,
+              "median_pct": 1.9211884711065608,
+              "loss5_pct": 7.5910931174089065,
+              "intraperiod_loss10_pct": 5.802968960863698,
+              "matched_spread_pct": 0.3084373947360095,
+              "spread_95ci_pct": [
+                -0.04726063609322343,
+                0.6643962552345108
+              ]
+            }
+          }
+        },
+        "63": {
+          "earlier": {
+            "ALL": {
+              "observations": 29448,
+              "dates": 3272,
+              "win_pct": 69.71610975278458,
+              "mean_pct": 2.928635626025556,
+              "median_pct": 3.381224244188219,
+              "loss5_pct": 14.082450421081226,
+              "intraperiod_loss10_pct": 18.921488725889706,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 16681,
+              "dates": 3010,
+              "win_pct": 68.38918530064146,
+              "mean_pct": 1.9713528166845917,
+              "median_pct": 2.6998317749496126,
+              "loss5_pct": 14.441580240992746,
+              "intraperiod_loss10_pct": 16.425873748576226,
+              "matched_spread_pct": -0.10346057158922134,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 2391,
+              "dates": 1462,
+              "win_pct": 73.35842743621916,
+              "mean_pct": 3.5058051125933334,
+              "median_pct": 4.024607077819575,
+              "loss5_pct": 11.041405269761606,
+              "intraperiod_loss10_pct": 15.558343789209536,
+              "matched_spread_pct": 0.47346266194963715,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 10376,
+              "dates": 2743,
+              "win_pct": 71.0100231303007,
+              "mean_pct": 4.334613102917718,
+              "median_pct": 4.966995120654561,
+              "loss5_pct": 14.205859676175791,
+              "intraperiod_loss10_pct": 23.708558211256747,
+              "matched_spread_pct": -0.2590943186260635,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          },
+          "holdout": {
+            "ALL": {
+              "observations": 7740,
+              "dates": 860,
+              "win_pct": 67.09302325581396,
+              "mean_pct": 3.6805966263807486,
+              "median_pct": 3.155230715187385,
+              "loss5_pct": 11.692506459948321,
+              "intraperiod_loss10_pct": 14.935400516795866,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 4126,
+              "dates": 822,
+              "win_pct": 59.718856034900625,
+              "mean_pct": 2.117355491305893,
+              "median_pct": 1.7511410146603956,
+              "loss5_pct": 16.165777993213766,
+              "intraperiod_loss10_pct": 16.19001454192923,
+              "matched_spread_pct": -1.466454185540336,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 742,
+              "dates": 468,
+              "win_pct": 65.22911051212938,
+              "mean_pct": 3.297629413384028,
+              "median_pct": 2.4373452367188353,
+              "loss5_pct": 10.242587601078167,
+              "intraperiod_loss10_pct": 14.690026954177899,
+              "matched_spread_pct": -0.3969301894169226,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 2872,
+              "dates": 791,
+              "win_pct": 78.16852367688021,
+              "mean_pct": 6.025337084376018,
+              "median_pct": 5.210864293861905,
+              "loss5_pct": 5.64066852367688,
+              "intraperiod_loss10_pct": 13.196378830083566,
+              "matched_spread_pct": 1.8105628009177845,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          }
+        },
+        "252": {
+          "earlier": {
+            "ALL": {
+              "observations": 29448,
+              "dates": 3272,
+              "win_pct": 80.1107036131486,
+              "mean_pct": 12.67246494489121,
+              "median_pct": 12.284486929776705,
+              "loss5_pct": 12.262292855202391,
+              "intraperiod_loss10_pct": 40.29136104319478,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 16681,
+              "dates": 3010,
+              "win_pct": 79.44967328097836,
+              "mean_pct": 11.084244015387469,
+              "median_pct": 10.851854306636731,
+              "loss5_pct": 12.091601222948265,
+              "intraperiod_loss10_pct": 39.79377735147773,
+              "matched_spread_pct": -0.6652342373731708,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 2391,
+              "dates": 1462,
+              "win_pct": 80.13383521539104,
+              "mean_pct": 12.162352653646687,
+              "median_pct": 12.546524644864654,
+              "loss5_pct": 12.75616896695943,
+              "intraperiod_loss10_pct": 40.19238812212463,
+              "matched_spread_pct": 0.3656475638873849,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 10376,
+              "dates": 2743,
+              "win_pct": 81.1680801850424,
+              "mean_pct": 15.343319977024747,
+              "median_pct": 15.298291725942681,
+              "loss5_pct": 12.42289899768697,
+              "intraperiod_loss10_pct": 41.114109483423285,
+              "matched_spread_pct": -0.7346250801251428,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          },
+          "holdout": {
+            "ALL": {
+              "observations": 6039,
+              "dates": 671,
+              "win_pct": 89.25318761384335,
+              "mean_pct": 15.978475068002174,
+              "median_pct": 15.020150029392676,
+              "loss5_pct": 4.355025666501076,
+              "intraperiod_loss10_pct": 32.836562344759066,
+              "matched_spread_pct": 0.0,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "BUY": {
+              "observations": 3205,
+              "dates": 633,
+              "win_pct": 86.98907956318253,
+              "mean_pct": 13.901423751350825,
+              "median_pct": 12.18862350063099,
+              "loss5_pct": 6.2714508580343225,
+              "intraperiod_loss10_pct": 34.29017160686427,
+              "matched_spread_pct": -0.7131619589053931,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "WAIT": {
+              "observations": 559,
+              "dates": 362,
+              "win_pct": 87.65652951699462,
+              "mean_pct": 14.209125079833376,
+              "median_pct": 13.424403474662627,
+              "loss5_pct": 3.5778175313059033,
+              "intraperiod_loss10_pct": 33.09481216457961,
+              "matched_spread_pct": -0.3735742901421113,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            },
+            "AVOID": {
+              "observations": 2275,
+              "dates": 607,
+              "win_pct": 92.83516483516485,
+              "mean_pct": 19.339361271630278,
+              "median_pct": 19.153435387398133,
+              "loss5_pct": 1.8461538461538463,
+              "intraperiod_loss10_pct": 30.725274725274726,
+              "matched_spread_pct": 1.3757328037665442,
+              "spread_95ci_pct": [
+                null,
+                null
+              ]
+            }
+          }
+        }
+      },
+      "yearly": {
+        "2010": {
+          "BUY": {
+            "observations": 1265,
+            "dates": 205,
+            "win_pct": 61.34387351778656,
+            "mean_pct": 0.5469876764664866,
+            "median_pct": 1.5864490817303123,
+            "loss5_pct": 15.177865612648223,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.0805204475495958,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 144,
+            "dates": 89,
+            "win_pct": 71.52777777777779,
+            "mean_pct": 1.760417476944833,
+            "median_pct": 2.166993485854951,
+            "loss5_pct": 9.027777777777777,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.2477828952456647,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 859,
+            "dates": 191,
+            "win_pct": 67.63678696158324,
+            "mean_pct": 2.170257056516464,
+            "median_pct": 2.262768008856475,
+            "loss5_pct": 9.19674039580908,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.22884473981730022,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2011": {
+          "BUY": {
+            "observations": 1078,
+            "dates": 217,
+            "win_pct": 52.875695732838594,
+            "mean_pct": -0.7290036556525904,
+            "median_pct": 0.21108875644114677,
+            "loss5_pct": 15.491651205936922,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.5122292702996162,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 186,
+            "dates": 110,
+            "win_pct": 54.3010752688172,
+            "mean_pct": -0.8041417631997392,
+            "median_pct": 0.508302275042849,
+            "loss5_pct": 18.27956989247312,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.5675313167787487,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 1004,
+            "dates": 206,
+            "win_pct": 65.0398406374502,
+            "mean_pct": 1.631167269362042,
+            "median_pct": 2.052095673676546,
+            "loss5_pct": 12.749003984063744,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.2159228243937055,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2012": {
+          "BUY": {
+            "observations": 1416,
+            "dates": 233,
+            "win_pct": 62.5,
+            "mean_pct": 0.83750439898823,
+            "median_pct": 1.0476909854015726,
+            "loss5_pct": 6.002824858757062,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.08243976091603221,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 214,
+            "dates": 131,
+            "win_pct": 68.69158878504673,
+            "mean_pct": 1.2027589529000218,
+            "median_pct": 1.4635300214253966,
+            "loss5_pct": 8.411214953271028,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.05790682046378963,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 620,
+            "dates": 191,
+            "win_pct": 70.16129032258065,
+            "mean_pct": 1.4778559542913003,
+            "median_pct": 1.7361888686503013,
+            "loss5_pct": 8.064516129032258,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.12438170684402972,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2013": {
+          "BUY": {
+            "observations": 1830,
+            "dates": 248,
+            "win_pct": 68.68852459016394,
+            "mean_pct": 1.2582533955947381,
+            "median_pct": 1.5523919296112632,
+            "loss5_pct": 3.3879781420765025,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.05184664061951306,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 187,
+            "dates": 106,
+            "win_pct": 83.42245989304813,
+            "mean_pct": 2.6687415607808194,
+            "median_pct": 2.6821244703072677,
+            "loss5_pct": 1.6042780748663104,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.26483798398247566,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 251,
+            "dates": 110,
+            "win_pct": 92.03187250996015,
+            "mean_pct": 3.6352852259288344,
+            "median_pct": 3.5935107626649865,
+            "loss5_pct": 0.796812749003984,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.3824581713672352,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2014": {
+          "BUY": {
+            "observations": 1560,
+            "dates": 250,
+            "win_pct": 58.14102564102564,
+            "mean_pct": 0.3662000749872875,
+            "median_pct": 0.4840318970375401,
+            "loss5_pct": 4.615384615384616,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.0995929720368777,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 242,
+            "dates": 120,
+            "win_pct": 81.40495867768594,
+            "mean_pct": 2.120965357927931,
+            "median_pct": 2.0493514459958506,
+            "loss5_pct": 2.479338842975207,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.38282241956695184,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 466,
+            "dates": 183,
+            "win_pct": 74.89270386266095,
+            "mean_pct": 2.090066427971453,
+            "median_pct": 2.9972214311341006,
+            "loss5_pct": 10.72961373390558,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.8272242471826443,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2015": {
+          "BUY": {
+            "observations": 919,
+            "dates": 219,
+            "win_pct": 37.97606093579978,
+            "mean_pct": -1.2906480389504504,
+            "median_pct": -0.7075658718451394,
+            "loss5_pct": 12.948857453754082,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.12671815394814948,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 238,
+            "dates": 141,
+            "win_pct": 53.36134453781513,
+            "mean_pct": -0.409195002054231,
+            "median_pct": 0.22270012939797912,
+            "loss5_pct": 13.865546218487395,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.6633474609579582,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 1111,
+            "dates": 252,
+            "win_pct": 52.92529252925292,
+            "mean_pct": -0.180232903229574,
+            "median_pct": 0.3635963058238101,
+            "loss5_pct": 21.962196219621962,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.22492592288817012,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2016": {
+          "BUY": {
+            "observations": 1231,
+            "dates": 251,
+            "win_pct": 59.05767668562144,
+            "mean_pct": 0.862640391744126,
+            "median_pct": 0.6572253383333893,
+            "loss5_pct": 1.6246953696181965,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.005793188618019391,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 176,
+            "dates": 121,
+            "win_pct": 73.29545454545455,
+            "mean_pct": 2.390848753945118,
+            "median_pct": 2.173398596871512,
+            "loss5_pct": 1.1363636363636365,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 1.4444328601737702,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 861,
+            "dates": 211,
+            "win_pct": 69.45412311265969,
+            "mean_pct": 2.441855629497867,
+            "median_pct": 2.4479098370324026,
+            "loss5_pct": 4.0650406504065035,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.37373913180037377,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2017": {
+          "BUY": {
+            "observations": 1615,
+            "dates": 251,
+            "win_pct": 69.72136222910217,
+            "mean_pct": 1.3632271808003649,
+            "median_pct": 1.2824679067983569,
+            "loss5_pct": 1.9814241486068114,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.2101593775601165,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 191,
+            "dates": 129,
+            "win_pct": 86.91099476439791,
+            "mean_pct": 2.885034554135322,
+            "median_pct": 2.844158149392806,
+            "loss5_pct": 0.0,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 1.2142537985663864,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 453,
+            "dates": 238,
+            "win_pct": 63.35540838852097,
+            "mean_pct": 1.3144449314611437,
+            "median_pct": 1.3551201717181494,
+            "loss5_pct": 3.090507726269316,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.7258643501240192,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2018": {
+          "BUY": {
+            "observations": 997,
+            "dates": 219,
+            "win_pct": 44.433299899699094,
+            "mean_pct": -1.4513228112323389,
+            "median_pct": -0.6702831357860761,
+            "loss5_pct": 20.36108324974925,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.17902298610116374,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 210,
+            "dates": 128,
+            "win_pct": 50.0,
+            "mean_pct": -0.47627236733730094,
+            "median_pct": -0.00417573405334104,
+            "loss5_pct": 9.523809523809524,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.5700896383622136,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 1052,
+            "dates": 235,
+            "win_pct": 54.752851711026615,
+            "mean_pct": 0.05695976752230147,
+            "median_pct": 0.5799193861127594,
+            "loss5_pct": 15.5893536121673,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.6084857327649235,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2019": {
+          "BUY": {
+            "observations": 1369,
+            "dates": 234,
+            "win_pct": 60.847333820306794,
+            "mean_pct": 0.6504733630463587,
+            "median_pct": 0.8997723797379731,
+            "loss5_pct": 6.647187728268809,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.2817475774585465,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 161,
+            "dates": 98,
+            "win_pct": 87.5776397515528,
+            "mean_pct": 3.200022005163514,
+            "median_pct": 3.383852928450226,
+            "loss5_pct": 0.0,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.6005049213920033,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 738,
+            "dates": 237,
+            "win_pct": 82.24932249322492,
+            "mean_pct": 3.0562710512139186,
+            "median_pct": 3.6846929731871536,
+            "loss5_pct": 5.9620596205962055,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.7344543925591804,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2020": {
+          "BUY": {
+            "observations": 1177,
+            "dates": 223,
+            "win_pct": 63.976210705182666,
+            "mean_pct": -0.048570054940587276,
+            "median_pct": 1.522652439850103,
+            "loss5_pct": 12.829226847918438,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.06495493882111895,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 111,
+            "dates": 73,
+            "win_pct": 67.56756756756756,
+            "mean_pct": -0.6837413817550385,
+            "median_pct": 3.0450189767113667,
+            "loss5_pct": 21.62162162162162,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.001321847920810904,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 989,
+            "dates": 241,
+            "win_pct": 65.62184024266936,
+            "mean_pct": 3.0185164071481507,
+            "median_pct": 4.073841430324254,
+            "loss5_pct": 18.6046511627907,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.43560472254838634,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2021": {
+          "BUY": {
+            "observations": 1513,
+            "dates": 250,
+            "win_pct": 53.998678122934564,
+            "mean_pct": 0.5906649677406934,
+            "median_pct": 0.5229504192023171,
+            "loss5_pct": 9.187045604758758,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.7918505356066488,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 244,
+            "dates": 149,
+            "win_pct": 74.18032786885246,
+            "mean_pct": 2.6797945813898236,
+            "median_pct": 2.2876813407741836,
+            "loss5_pct": 6.147540983606557,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.8642404593542535,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 511,
+            "dates": 202,
+            "win_pct": 83.75733855185909,
+            "mean_pct": 4.548137218562166,
+            "median_pct": 3.902652031350673,
+            "loss5_pct": 0.3913894324853229,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 2.782971543834735,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2022": {
+          "BUY": {
+            "observations": 711,
+            "dates": 210,
+            "win_pct": 34.036568213783404,
+            "mean_pct": -1.8007178093303284,
+            "median_pct": -2.136782017391581,
+            "loss5_pct": 27.566807313642755,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.14550302524288128,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 87,
+            "dates": 67,
+            "win_pct": 33.33333333333333,
+            "mean_pct": -1.4253558202089673,
+            "median_pct": -2.374869233562027,
+            "loss5_pct": 26.436781609195403,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.34154666238073617,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 1461,
+            "dates": 246,
+            "win_pct": 53.73032169746749,
+            "mean_pct": 0.7629721221747089,
+            "median_pct": 0.8335770543315579,
+            "loss5_pct": 23.887748117727583,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.5109839487960064,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2023": {
+          "BUY": {
+            "observations": 950,
+            "dates": 232,
+            "win_pct": 48.63157894736842,
+            "mean_pct": 0.08377325352672338,
+            "median_pct": -0.17844809112916304,
+            "loss5_pct": 13.368421052631579,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.07722812128490623,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 175,
+            "dates": 116,
+            "win_pct": 49.714285714285715,
+            "mean_pct": -0.02749183411835838,
+            "median_pct": -0.3759803084402269,
+            "loss5_pct": 17.142857142857142,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.12422614554088895,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 1125,
+            "dates": 241,
+            "win_pct": 60.266666666666666,
+            "mean_pct": 1.325304704308877,
+            "median_pct": 1.3672787507548634,
+            "loss5_pct": 7.28888888888889,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.042304548310186804,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2024": {
+          "BUY": {
+            "observations": 1534,
+            "dates": 252,
+            "win_pct": 61.016949152542374,
+            "mean_pct": 1.0778200536178146,
+            "median_pct": 1.2807294463356822,
+            "loss5_pct": 6.323337679269883,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.21812758219861939,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 258,
+            "dates": 157,
+            "win_pct": 58.91472868217055,
+            "mean_pct": 0.9528636268000003,
+            "median_pct": 0.719941769809096,
+            "loss5_pct": 5.426356589147287,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.4443482269142884,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 476,
+            "dates": 197,
+            "win_pct": 73.10924369747899,
+            "mean_pct": 2.246226402198002,
+            "median_pct": 2.528406615060552,
+            "loss5_pct": 5.042016806722689,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.2270444454888665,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2025": {
+          "BUY": {
+            "observations": 1127,
+            "dates": 230,
+            "win_pct": 54.56965394853594,
+            "mean_pct": 0.5100633775397106,
+            "median_pct": 0.2307131489297065,
+            "loss5_pct": 6.211180124223603,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.43870657442882205,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 228,
+            "dates": 144,
+            "win_pct": 60.08771929824561,
+            "mean_pct": 0.19631446967290855,
+            "median_pct": 0.7312620427002536,
+            "loss5_pct": 9.649122807017543,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.8387226623338123,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 895,
+            "dates": 249,
+            "win_pct": 65.92178770949721,
+            "mean_pct": 1.7781833576424937,
+            "median_pct": 1.992552600992492,
+            "loss5_pct": 9.944134078212292,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.29158002063408245,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        },
+        "2026": {
+          "BUY": {
+            "observations": 751,
+            "dates": 150,
+            "win_pct": 50.86551264980027,
+            "mean_pct": 0.849265646461785,
+            "median_pct": 0.10358208512515343,
+            "loss5_pct": 15.446071904127828,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -0.7872891354915096,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "WAIT": {
+            "observations": 131,
+            "dates": 79,
+            "win_pct": 53.43511450381679,
+            "mean_pct": 0.5695406207008669,
+            "median_pct": 0.6073446889209189,
+            "loss5_pct": 8.396946564885496,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": -1.1471203290241727,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          },
+          "AVOID": {
+            "observations": 468,
+            "dates": 146,
+            "win_pct": 67.73504273504274,
+            "mean_pct": 2.574117949460818,
+            "median_pct": 2.535867301089678,
+            "loss5_pct": 6.41025641025641,
+            "intraperiod_loss10_pct": null,
+            "matched_spread_pct": 0.8863135121448471,
+            "spread_95ci_pct": [
+              null,
+              null
+            ]
+          }
+        }
+      },
+      "individual_filters": {
+        "above_50_day": {
+          "observations": 5235,
+          "dates": 881,
+          "win_pct": 56.27507163323783,
+          "mean_pct": 0.7691120447741623,
+          "median_pct": 0.6696095149148595,
+          "loss5_pct": 9.169054441260744,
+          "intraperiod_loss10_pct": 3.2282712511938874,
+          "matched_spread_pct": -0.29856643140184175,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "20_above_50_day": {
+          "observations": 5077,
+          "dates": 871,
+          "win_pct": 56.706716564900525,
+          "mean_pct": 0.7691646901748268,
+          "median_pct": 0.7452664949153975,
+          "loss5_pct": 8.705928698050029,
+          "intraperiod_loss10_pct": 3.427220799684853,
+          "matched_spread_pct": -0.3708130211740558,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "positive_21_day_momentum": {
+          "observations": 4883,
+          "dates": 871,
+          "win_pct": 57.075568298177345,
+          "mean_pct": 0.8499688374314595,
+          "median_pct": 0.7973282304053919,
+          "loss5_pct": 8.744624206430473,
+          "intraperiod_loss10_pct": 3.3585910301044444,
+          "matched_spread_pct": -0.24021120208585875,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "rsi_above_50": {
+          "observations": 5113,
+          "dates": 874,
+          "win_pct": 57.109329160962254,
+          "mean_pct": 0.8264658101352617,
+          "median_pct": 0.777119549965688,
+          "loss5_pct": 9.368276941130452,
+          "intraperiod_loss10_pct": 3.3444161940152553,
+          "matched_spread_pct": -0.24320502372284447,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "rsi_oversold_below_30": {
+          "observations": 151,
+          "dates": 87,
+          "win_pct": 74.17218543046357,
+          "mean_pct": 4.009852864659784,
+          "median_pct": 4.08577402194672,
+          "loss5_pct": 3.9735099337748347,
+          "intraperiod_loss10_pct": 7.9470198675496695,
+          "matched_spread_pct": 0.7735683098946541,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "above_200_day": {
+          "observations": 6427,
+          "dates": 898,
+          "win_pct": 55.87365800529018,
+          "mean_pct": 0.6776940257189283,
+          "median_pct": 0.6197533578126802,
+          "loss5_pct": 9.537887039053992,
+          "intraperiod_loss10_pct": 3.8120429438307144,
+          "matched_spread_pct": -0.23668338889346502,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "within_20pct_of_high": {
+          "observations": 8016,
+          "dates": 902,
+          "win_pct": 58.57035928143712,
+          "mean_pct": 1.0081408532768785,
+          "median_pct": 0.9852830017421654,
+          "loss5_pct": 8.769960079840319,
+          "intraperiod_loss10_pct": 4.229041916167665,
+          "matched_spread_pct": -0.05624436425985716,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "no_fast_crash": {
+          "observations": 8096,
+          "dates": 902,
+          "win_pct": 58.69565217391305,
+          "mean_pct": 1.0430633883581892,
+          "median_pct": 1.007126620199672,
+          "loss5_pct": 8.794466403162057,
+          "intraperiod_loss10_pct": 4.199604743083004,
+          "matched_spread_pct": -0.01013927372008404,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "no_volatility_spike": {
+          "observations": 8037,
+          "dates": 901,
+          "win_pct": 58.57907179295757,
+          "mean_pct": 0.9991779034547142,
+          "median_pct": 0.980030355906214,
+          "loss5_pct": 8.834142092820704,
+          "intraperiod_loss10_pct": 4.23043424163245,
+          "matched_spread_pct": -0.04105442422308573,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        },
+        "core_buy_without_sector": {
+          "observations": 4362,
+          "dates": 864,
+          "win_pct": 54.90600641907382,
+          "mean_pct": 0.675286675855151,
+          "median_pct": 0.5100219486089963,
+          "loss5_pct": 9.399358092618066,
+          "intraperiod_loss10_pct": 3.278312700596057,
+          "matched_spread_pct": -0.33782518205382617,
+          "spread_95ci_pct": [
+            null,
+            null
+          ]
+        }
+      },
+      "portfolios": {
+        "earlier_and_recent": {
+          "all": {
+            "cagr_pct": 10.196502572800492,
+            "total_pct": 405.02906408341926,
+            "max_drawdown_pct": -34.60868351052589,
+            "invested_month_pct": 100.0,
+            "months": 201
+          },
+          "buy": {
+            "cagr_pct": 4.599378827134126,
+            "total_pct": 111.70235817232803,
+            "max_drawdown_pct": -34.00861968223731,
+            "invested_month_pct": 93.53233830845771,
+            "months": 201
+          },
+          "sma200": {
+            "cagr_pct": 7.352914300662472,
+            "total_pct": 226.54543343389383,
+            "max_drawdown_pct": -30.522698578134655,
+            "invested_month_pct": 98.00995024875621,
+            "months": 201
+          },
+          "spy_buy_hold": {
+            "cagr_pct": 14.151020709974581,
+            "total_pct": 809.2950424553246,
+            "max_drawdown_pct": -32.04897187634762
+          }
+        },
+        "holdout": {
+          "all": {
+            "cagr_pct": 12.840596475512367,
+            "total_pct": 56.026719896780676,
+            "max_drawdown_pct": -17.190703114455154,
+            "invested_month_pct": 100.0,
+            "months": 45
+          },
+          "buy": {
+            "cagr_pct": 7.869560442727286,
+            "total_pct": 32.17436994377589,
+            "max_drawdown_pct": -18.08428693790264,
+            "invested_month_pct": 95.55555555555556,
+            "months": 45
+          },
+          "sma200": {
+            "cagr_pct": 9.897779587106225,
+            "total_pct": 41.559158641379554,
+            "max_drawdown_pct": -17.548603878276648,
+            "invested_month_pct": 100.0,
+            "months": 45
+          },
+          "spy_buy_hold": {
+            "cagr_pct": 21.92122621618764,
+            "total_pct": 107.48146044269475,
+            "max_drawdown_pct": -19.76622274935844
+          }
+        }
+      },
+      "probability_validation": {
+        "all_walk_forward": {
+          "n": 23985,
+          "brier": 0.2372232440015297,
+          "baseline_brier": 0.23697513236372844,
+          "skill_pct": -0.10469944053894675,
+          "error_improvement_95ci": [
+            -0.0024725570672420017,
+            0.001974870541629732
+          ],
+          "reliability": [
+            {
+              "band": "buy",
+              "n": 4729,
+              "predicted_up_pct": 62.24917096095343,
+              "actual_up_pct": 59.928103193064075
+            },
+            {
+              "band": "hold",
+              "n": 3668,
+              "predicted_up_pct": 68.719649642619,
+              "actual_up_pct": 66.6030534351145
+            },
+            {
+              "band": "sell",
+              "n": 2845,
+              "predicted_up_pct": 66.68182867476199,
+              "actual_up_pct": 65.09666080843586
+            },
+            {
+              "band": "strong_buy",
+              "n": 8252,
+              "predicted_up_pct": 59.1557658036032,
+              "actual_up_pct": 57.63451284537082
+            },
+            {
+              "band": "strong_sell",
+              "n": 4491,
+              "predicted_up_pct": 65.45592883092282,
+              "actual_up_pct": 67.00066800267201
+            }
+          ]
+        },
+        "holdout": {
+          "n": 8127,
+          "brier": 0.240221851583737,
+          "baseline_brier": 0.2398880483775199,
+          "skill_pct": -0.13914957767791059,
+          "error_improvement_95ci": [
+            -0.004074978467746049,
+            0.0033184505864464107
+          ],
+          "reliability": [
+            {
+              "band": "buy",
+              "n": 1680,
+              "predicted_up_pct": 60.954817954513885,
+              "actual_up_pct": 55.11904761904762
+            },
+            {
+              "band": "hold",
+              "n": 1229,
+              "predicted_up_pct": 67.09794499984005,
+              "actual_up_pct": 61.75752644426363
+            },
+            {
+              "band": "sell",
+              "n": 1010,
+              "predicted_up_pct": 65.93185937031154,
+              "actual_up_pct": 64.35643564356435
+            },
+            {
+              "band": "strong_buy",
+              "n": 2688,
+              "predicted_up_pct": 56.47976661278077,
+              "actual_up_pct": 57.44047619047619
+            },
+            {
+              "band": "strong_sell",
+              "n": 1520,
+              "predicted_up_pct": 66.44732891874891,
+              "actual_up_pct": 68.61842105263159
+            }
+          ]
+        }
+      }
+    }
+  },
+  "sources": {
+    "Yahoo": "https://finance.yahoo.com/",
+    "backtest_limits": "https://www.finra.org/investors/insights/smart-beta-what-you-need-know"
+  },
+  "real_data_score_parity_checks": 96,
+  "real_data_entry_parity_checks": 96
+}

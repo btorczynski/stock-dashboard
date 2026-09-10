@@ -8,6 +8,7 @@ first time), and reports whether every panel populated, plus any error. Paste th
 back if something says EMPTY or ERROR and it can be fixed quickly.
 """
 import time, traceback
+from entry_rules import validate_snapshot
 
 
 def main():
@@ -15,12 +16,12 @@ def main():
     try:
         import stock_dashboard as s
     except Exception:
-        print("IMPORT FAILED:\n"); traceback.print_exc(); return
+        print("IMPORT FAILED:\n"); traceback.print_exc(); return 1
     print("import OK — building snapshot (fetching live data, please wait)...")
     try:
-        snap = s.build_snapshot()
+        snap = validate_snapshot(s.build_snapshot())
     except Exception:
-        print("build_snapshot FAILED:\n"); traceback.print_exc(); return
+        print("build_snapshot FAILED:\n"); traceback.print_exc(); return 1
     print(f"BUILD OK in {time.time()-t0:.0f}s\n")
     checks = ["top_calls", "sectors", "movers", "watchlist", "picks", "sim",
               "forever_hold", "sector_health", "insiders", "crash_risk", "macro"]
@@ -34,7 +35,7 @@ def main():
             status = "present" if v is not None else "MISSING"
         print(f"  {k:16s}: {status}")
     tc = snap.get("top_calls", {}) or {}
-    print("\n  Top calls:", [(t.get("symbol"), t.get("action"), str(t.get("confidence")) + "%") for t in tc.get("top", [])])
+    print("\n  Top calls:", [(t.get("symbol"), t.get("action"), str(t.get("confidence")) + "/100 rating") for t in tc.get("top", [])])
     sc = tc.get("scorecard", {}) or {}
     print("  Scorecard:", "graded", sc.get("graded"), "| open", sc.get("open"), "| hit_rate", sc.get("hit_rate"))
     wl = snap.get("watchlist", []) or []
@@ -45,8 +46,11 @@ def main():
     sh = snap.get("sector_health") or {}
     warn = {k: v for k, v in sh.items() if v.get("status") not in (None, "ok")}
     print("  Sector crash watch:", {k: f"{v['off_high_pct']}% ({v['status']})" for k, v in warn.items()} or "all sectors healthy")
-    print("\nIf everything above is non-EMPTY, the dashboard is healthy. Run run_dashboard.bat to view it.")
+    blocked = sum((w.get("signal") or {}).get("data_status") not in ("current", "close") for w in wl)
+    print(f"\nSnapshot validation passed. {blocked}/{len(wl)} watchlist quotes unavailable or stale.")
+    print("An empty BUY list is valid: no stocks currently pass the entry checks.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

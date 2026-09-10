@@ -5,6 +5,9 @@ public/
 __pycache__/
 *.pyc
 
+# reproducible indicator-validation input cache and intermediate output
+validation/
+
 # local logs
 run_err.log
 run_forever.log

@@ -211,6 +211,16 @@ INDEX_HTML = r"""<!DOCTYPE html>
 </header>
 
 <main>
+<div id="feedWarning" role="status" style="display:none;padding:12px;margin-bottom:14px;border:1px solid var(--hold);border-radius:12px;color:var(--hold)"></div>
+<section class="card" style="margin:18px 20px" aria-label="Purchase timing">
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+    <div><h2 style="font-size:20px;margin:0 0 6px">Before you buy</h2><div class="sub">BUY: entry checks pass · WAIT: mixed signals or missing data · AVOID: downside checks triggered</div></div>
+    <label style="font-size:12px">Show <select id="entryFilter" style="padding:7px;border-radius:8px;background:#141c2d;color:var(--txt);border:1px solid var(--line)"><option value="ALL">All watchlist stocks</option><option>BUY</option><option>WAIT</option><option>AVOID</option></select></label>
+  </div>
+  <div id="entryCounts" style="margin:12px 0;font-size:12px"></div>
+  <div id="entryCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px;max-height:350px;overflow:auto"><div class="empty">Waiting for price data…</div></div>
+  <div class="disc">Entry checks combine trend, momentum and downside guards. BUY means favorable conditions under these rules; it is not a probability of profit. AVOID refers to a new purchase. Quote time is shown for each stock.</div>
+</section>
 
 <section id="tab-market" class="tabpane active">
   <div class="movers" id="movers"></div>
@@ -278,6 +288,35 @@ function rgba(c,a){const m=(c.match(/\d+/g)||[27,34,48]).slice(0,3).join(',');re
 function orb(p){const b=heatColor(p);return `radial-gradient(circle at 50% 42%, ${rgba(b,.82)}, ${rgba(b,.42)} 62%, ${rgba(b,.12)})`;}
 function actColor(a){return a==='BUY'?'var(--buy)':a==='SELL'?'var(--sell)':a==='HOLD'?'var(--hold)':'#6b7280';}
 function actBg(a){return a==='BUY'?'rgba(22,163,74,.18)':a==='SELL'?'rgba(220,53,69,.18)':a==='HOLD'?'rgba(184,134,11,.18)':'rgba(107,114,128,.18)';}
+function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function feedStale(){
+  const d=st.data;if(!d)return true;
+  const limit=d._static?1200:(['pre','regular','post'].includes(d.session?.state)?180:900);
+  return !!st.fetchError||!!d.feed_status?.stale||Date.now()/1000-d.updated_at>limit;
+}
+function purchaseAction(s){return feedStale()?'WAIT':s.entry_action||'WAIT';}
+function entryColor(a){return a==='BUY'?'var(--buy)':a==='AVOID'?'var(--sell)':'var(--hold)';}
+function quoteTime(value){
+  if(!value)return 'unavailable';
+  if(!value.includes('T'))return value+' close';
+  const d=new Date(value);
+  return Number.isNaN(d.getTime())?value:d.toLocaleString('en-US',{timeZone:'America/New_York',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' ET';
+}
+function renderPurchases(){
+  if(!st.data)return;
+  const stale=feedStale(),warning=$('feedWarning');
+  warning.style.display=stale?'block':'none';
+  warning.textContent='WAIT — the data feed is unavailable or this snapshot is out of date. Purchase signals are paused until a fresh snapshot arrives.';
+  const rows=(st.data.watchlist||[]).filter(w=>w.ticker),counts={BUY:0,WAIT:0,AVOID:0};
+  for(const w of rows)counts[purchaseAction(w.signal||{})]++;
+  $('entryCounts').innerHTML=Object.entries(counts).map(([a,n])=>`<span style="margin-right:20px;color:${entryColor(a)}"><b>${n}</b> ${a}</span>`).join('');
+  const filter=$('entryFilter').value,rank={BUY:0,WAIT:1,AVOID:2};
+  const shown=rows.filter(w=>filter==='ALL'||purchaseAction(w.signal||{})===filter).sort((a,b)=>rank[purchaseAction(a.signal||{})]-rank[purchaseAction(b.signal||{})]||((b.signal?.score||0)-(a.signal?.score||0)));
+  $('entryCards').innerHTML=shown.map(w=>{const s=w.signal||{},a=purchaseAction(s);
+    const why=stale?'Refresh the data before considering a new purchase.':s.entry_reason||'Waiting for validated signal data';
+    return `<article style="min-width:0;padding:12px;border:1px solid var(--line);border-left:3px solid ${entryColor(a)};border-radius:10px;background:var(--panel2)"><div style="display:flex;justify-content:space-between;gap:10px"><b>${esc(w.ticker)}</b><b style="color:${entryColor(a)}">${a}</b></div><div class="sub" style="margin:4px 0 8px;font-size:12px">${esc(w.label)} · ${fmtPrice(s.price)}</div><div style="font-size:12px;line-height:1.5">${esc(why)}</div><div class="sub" style="margin-top:8px;font-size:11px;color:var(--muted)">Quote: ${esc(quoteTime(s.quote_as_of))}<br>${esc(s.data_reason||'Freshness unverified')}</div></article>`;
+  }).join('')||'<div class="empty">No stocks match this filter. Waiting is a valid result.</div>';
+}
 function ahChip(m){if(!m||m.ext_change_pct==null||!m.ext_kind)return '';return `<span class="ahchip">${m.ext_kind==='pre'?'PRE':'AH'} ${fmtPct(m.ext_change_pct)}</span>`;}
 function bubSize(pct){return Math.round(50+Math.min(Math.abs(pct||0),5)/5*102);}
 
@@ -298,7 +337,7 @@ function render(){
   const rc=$('regimeChip');rc.className='regchip '+lab.replace(/[^A-Za-z]/g,'');
   rc.innerHTML=`${lab} ${mb>=0?'+':''}${mb.toFixed(2)}`+(d.event_risk>=0.4?' · ⚠ event':'');
   $('updated').textContent=d.updated_at_str.replace(' ET','');
-  renderCrashRadar();renderTopCalls();renderMovers();renderBubbles();renderDetail();renderLT();renderCrash();renderMacro();renderFutures();renderEvents();renderNews();renderResources();renderPicks();renderSignals();renderUnusual();renderInsider();renderForever();
+  renderPurchases();renderCrashRadar();renderTopCalls();renderMovers();renderBubbles();renderDetail();renderLT();renderCrash();renderMacro();renderFutures();renderEvents();renderNews();renderResources();renderPicks();renderSignals();renderUnusual();renderInsider();renderForever();
 }
 function renderMovers(){
   const m=st.data.movers||{losers:[],gainers:[]};
@@ -434,7 +473,7 @@ function renderMacro(){
       ${cell('CPI YoY',mc.cpi,mc.cpi!=null?mc.cpi.toFixed(1)+'%':'—',2.5,3.5)}
       ${cell('Shiller CAPE',mc.cape,mc.cape!=null?mc.cape.toFixed(0):'—',22,32)}
     </div>
-    <div class="disc"><span style="color:#5ee08a">green</span> supportive · <span style="color:#ffcd6b">amber</span> neutral · <span style="color:#ff8f9c">red</span> headwind. ${(mc.drivers||[]).join(' · ')}. CAPE vs ${mc.cape_mean} avg. As of ${mc.as_of}.</div>`;
+    <div class="disc"><span style="color:#5ee08a">green</span> supportive · <span style="color:#ffcd6b">amber</span> neutral · <span style="color:#ff8f9c">red</span> headwind. ${(mc.drivers||[]).join(' · ')}. CAPE vs ${mc.cape_mean} avg. <b>CPI/CAPE are manually configured inputs dated ${mc.as_of}; they are not live releases.</b></div>`;
 }
 function renderFutures(){
   const f=st.data.futures||{items:[]};
@@ -472,7 +511,7 @@ function renderLT(){
     if(!d||d.cagr_pct==null)continue;
     if(d.tag==='avoid'){if(w.ticker)avoid.push(w.ticker);continue;}
     const odds=(lv&&lv.lt_up!=null)?lv.lt_up:null;
-    const sale=!!(lv&&s.price!=null&&lv.buy!=null&&s.price<=lv.buy);
+    const sale=!!(purchaseAction(s)==='BUY'&&lv&&s.price!=null&&lv.buy!=null&&s.price<=lv.buy);
     const score=Math.min(d.cagr_pct,40)+(odds!=null?(odds-50)*0.8:0)+(s.action==='BUY'?5:0)+(sale?3:0);
     rows.push({w,d,lv,s,odds,sale,score});
   }
@@ -481,7 +520,7 @@ function renderLT(){
   h+=rows.length?rows.slice(0,8).map((x,i)=>{
     const cagrCol=x.d.cagr_pct>=20?'#7fe0b0':'#e8c06a';
     const oddsTxt=x.odds!=null?`1yr ↑odds <b style="color:${x.odds>=60?'#7fe0b0':'#e8c06a'}">${x.odds}%</b>`:'';
-    const buyTxt=(x.lv&&x.lv.buy!=null)?`${oddsTxt?' · ':''}add ≤ <b style="color:#7fe0b0">$${x.lv.buy}</b>`:'';
+    const buyTxt=(x.lv&&x.lv.buy!=null)?`${oddsTxt?' · ':''}reference ≤ <b style="color:#7fe0b0">$${x.lv.buy}</b>`:'';
     const sale=x.sale?' <span style="font-size:9px;font-weight:800;color:#08120b;background:#22c55e;border-radius:5px;padding:1px 5px">ON SALE</span>':'';
     return `<div class="row"><div class="rank">${i+1}</div><div class="l"><div class="sym">${x.w.label} <span style="color:var(--muted);font-weight:600;font-size:10px">${x.w.ticker}</span>${sale}</div><div class="sub">${oddsTxt}${buyTxt}</div></div>
       <div class="px">${fmtPrice(x.s.price)}<br><span style="color:${cagrCol};font-weight:800">${x.d.cagr_pct>=0?'+':''}${x.d.cagr_pct}%/yr</span></div></div>`;
@@ -492,11 +531,11 @@ function renderLT(){
 }
 function pr(r){return (r||[]).filter(x=>!/^macro|event/.test(x)).slice(0,2).join(' · ');}
 function renderPicks(){
-  const p=st.data.picks||[];
+  const p=(st.data.picks||[]).filter(x=>purchaseAction(x)==='BUY');
   let h='<div class="section-title">Top 5 Buy Signals <span style="text-transform:none;color:var(--muted)">· short-term</span></div>';
   h+=p.length?p.map((x,i)=>`<div class="row"><div class="rank">${i+1}</div><div class="l"><div class="sym">${x.symbol} <span style="color:var(--muted);font-weight:600;font-size:10px">${x.sector||''}</span></div><div class="sub">${pr(x.reasons)}</div></div>
      <div class="px">${fmtPrice(x.price)}<br><span style="color:${(x.change_pct||0)>=0?'var(--up)':'var(--down)'}">${fmtPct(x.change_pct)}</span></div>
-     <div class="act" style="color:${actColor(x.action)};background:${actBg(x.action)}">${x.action}<small>${x.strength}%</small></div></div>`).join(''):'<div class="empty">—</div>';
+     <div class="act" style="color:${actColor(x.action)};background:${actBg(x.action)}">${x.action}<small>${x.strength}/100</small></div></div>`).join(''):'<div class="empty">No qualifying BUY signals. Wait for conditions to improve.</div>';
   h+='<div class="disc">Highest mechanical score (incl. macro/futures/commodity/event tilt). Not advice.</div>';
   $('picksCard').innerHTML=h;
 }
@@ -508,7 +547,7 @@ function renderSignals(){
   const _ltRank=w=>{const t=(w.drift||{}).tag;return t==='strong'?0:(t==='long'?1:(t==='avoid'?3:2));};
   const wl=(st.data.watchlist||[]).slice().sort((a,b)=>(_ltRank(a)-_ltRank(b))||((((b.signal||{}).strength)||0)-(((a.signal||{}).strength)||0)));
   const oc=p=>p==null?'var(--muted)':(p>=60?'#7fe0b0':(p>=50?'#e8c06a':'#f0a0a0'));
-  let h='<div class="section-title">Signals — Buy / Sell / Hold <span style="text-transform:none;color:var(--muted)">· long-term compounders first</span></div>';
+  let h='<div class="section-title">Purchase conditions — BUY / WAIT / AVOID <span style="text-transform:none;color:var(--muted)">· long-term compounders first</span></div>';
   h+=wl.map(w=>{const s=w.signal||{},t=w.ticker||w.proxy||'';const sub=w.private?('Private · via '+(w.proxy||'')):(w.note||t);const lv=w.levels;
     const px=s.price!=null?`${fmtPrice(s.price)}<br><span style="color:${(s.change_pct||0)>=0?'var(--up)':'var(--down)'}">${fmtPct(s.change_pct)}</span>`:'—';
     const up=lv?lv.up_now:(s.sma_state?s.sma_state==='above':((s.mom1m||0)>=0));
@@ -521,18 +560,19 @@ function renderSignals(){
     const arr=`<svg width="${_W}" height="${_H}" viewBox="0 0 ${_W} ${_H}" style="vertical-align:middle;margin-left:5px" title="${up?'Trending up':'Trending down'} — longer tail = stronger trend (strength ${Math.round(stren)})">${_line}${_head}</svg>`;
     const pooled=lv&&(lv.st_basis==='pooled'||lv.lt_basis==='pooled');
     const odds=lv?`<span title="Historical odds the stock was higher 1 month / 1 year later, judged from its current trend state over ~10y${pooled?' — pooled (thin history)':''}">📈 1mo <b style="color:${oc(lv.st_up)}">${lv.st_up}%</b> · 1yr <b style="color:${oc(lv.lt_up)}">${lv.lt_up}%</b> <span style="color:#5a6675">↑odds${pooled?'*':''}</span></span>`:`<span style="color:#5a6675">📈 odds — building history</span>`;
-    const lvls=lv?`<span title="Backtested: typical 1-month pullback entry & typical 3-month target, from this name's own ~10y history">🎯 Buy ≤ <b style="color:#7fe0b0">$${lv.buy}</b> · Sell ≥ <b style="color:#e8c06a">$${lv.sell}</b></span>`:'';
+    const lvls=lv?`<span title="Backtested: typical 1-month pullback entry & typical 3-month target, from this name's own ~10y history">🎯 Dip reference ≤ <b style="color:#7fe0b0">$${lv.buy}</b> · Target reference ≥ <b style="color:#e8c06a">$${lv.sell}</b></span>`:'';
     const f=w.fund;const rk={strong_buy:'Strong Buy',buy:'Buy',hold:'Hold',underperform:'Underperform',sell:'Sell'};
     const fline=(f&&(f.quality!=null||f.street_anchor!=null))?`<div style="display:flex;justify-content:space-between;gap:8px;font-size:9.5px;padding:0 8px 1px;font-variant-numeric:tabular-nums;color:var(--muted)">
       <span title="Yahoo Finance fundamentals: revenue growth YoY, profit margin, return on equity — combined into the 0-100 quality score that tilts confidence">${f.quality!=null?`🏢 quality <b style="color:${f.quality>=60?'#7fe0b0':(f.quality>=40?'#e8c06a':'#f0a0a0')}">${f.quality}</b>`:''}${f.rev_growth_pct!=null?` · rev ${f.rev_growth_pct>=0?'+':''}${f.rev_growth_pct}% YoY`:''}${f.margin_pct!=null?` · margin ${f.margin_pct}%`:''}</span>
       ${f.street_anchor!=null?`<span title="Analyst consensus (Yahoo): recommendation mean ${f.rec_mean} across ${f.analysts} analysts${f.target_upside_pct!=null?`, mean target ${f.target_upside_pct>=0?'+':''}${f.target_upside_pct}% from here`:''} — confidence is anchored within ±20 pts of this">🧭 Street: <b style="color:${f.street_anchor>=60?'#7fe0b0':(f.street_anchor>=40?'#e8c06a':'#f0a0a0')}">${rk[f.rec_key]||f.rec_key||'—'}</b> <span style="color:#5a6675">(${f.analysts})</span></span>`:''}</div>`:'';
     return `<div style="margin-bottom:6px">
       <div class="row" style="margin-bottom:2px"><div class="l"><div class="sym">${w.label} <span style="color:var(--muted);font-weight:600;font-size:10px">${t}</span>${driftBadge(w)}</div><div class="sub">${sub}${ahChip(s)?' · '+ahChip(s):''}</div></div>
-        <div class="px">${px}</div><div class="act" style="color:${actColor(s.action)};background:${actBg(s.action)};display:inline-flex;align-items:center;justify-content:center;gap:5px"><span>${s.action||'N/A'}${s.conf_pct!=null?`<small title="Calibrated confidence: over ~10y, when this name's signal sat in this band (${s.band||''}), the ${s.action==='HOLD'?'price stayed roughly flat':'call was right'} ${s.conf_cal_pct!=null?s.conf_cal_pct:s.conf_pct}% of the time over the next month${s.conf_basis==='pooled'?' (pooled — thin band history)':''}${s.conf_adj?`. Adjusted to ${s.conf_pct}%: crash risk ${s.conf_adj.crash>0?'+':''}${s.conf_adj.crash}, fundamentals ${s.conf_adj.fund>0?'+':''}${s.conf_adj.fund}, Street anchor ${s.conf_adj.street>0?'+':''}${s.conf_adj.street}`:''}">${s.conf_pct}%</small>`:(s.strength?`<small>${s.strength}%</small>`:'')}</span>${arr}</div></div>
+        <div class="px">${px}</div><div class="act" style="color:${entryColor(purchaseAction(s))};background:var(--panel2)"><span>${purchaseAction(s)}<small title="Adjusted model rating; not a probability of profit">${s.conf_pct??s.strength??0}/100</small></span>${arr}</div></div>
+      <div class="sub" style="padding:0 8px 5px">${esc(feedStale()?'Waiting for fresh data':s.entry_reason||s.note||'')}${s.conf_cal_pct!=null?` · historical band hit rate ${s.conf_cal_pct}% (1 month, ${esc(s.conf_basis||'pooled')})`:''}</div>
       <div style="display:flex;justify-content:space-between;gap:8px;font-size:9.5px;padding:0 8px 1px;font-variant-numeric:tabular-nums">${odds}${lvls}</div>
       ${fline}
     </div>`;}).join('');
-  h+='<div class="disc">The <b>%</b> on each BUY/SELL/HOLD is <b>calibrated confidence</b>: the historical hit-rate of this signal band over the name\'s own ~10y (1-month horizon, shrunk toward the watchlist average when the band is thin), then <b>weighted for crash risk</b> (elevated index-level crash odds damp bullish confidence), <b>tilted by fundamentals</b> (revenue growth, margins, ROE — the 🏢 quality score, ±8 pts) and <b>anchored to the Street</b> (🧭 blended toward &amp; kept within ±20 pts of the analyst consensus when ≥4 analysts cover the name) — hover the % for the exact breakdown. ▲/▼ = current price trend (above/below its 50-day). 📈 <b>↑odds</b> = historical chance the stock was higher 1mo / 1yr later from this same trend state (1yr reads high — 2008–26 was mostly a bull market, so weigh it against the ~70% base). 🎯 <b>Buy/Sell</b> = its own typical 1-month dip entry &amp; 3-month target. <small>*pooled = thin history, uses watchlist average.</small> Mechanical &amp; backtested — not advice.</div>';
+  h+='<div class="disc">The rating /100 includes heuristic adjustments for crash risk, fundamentals and analyst consensus; it is <b>not a probability</b>. The separate historical band hit rate describes the price-only signal over a 1-month horizon, with pooled results when ticker history is thin. It does not validate the complete live model. Overlapping historical samples are correlated. Entry reference prices and forward-return statistics are context, not guaranteed targets.</div>';
   $('sigCard').innerHTML=h;
 }
 function renderUnusual(){
@@ -721,18 +761,18 @@ function renderForever(){
   const driftTable=hp.length?`<div style="margin-top:12px"><div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px">WHO CARRIED THE BASKET — each name's total return since ${meta.since}, and the weight it has DRIFTED to (all started at ${eqw}%, never rebalanced)</div>
     <table class="tr"><thead><tr><th>Holding</th><th>Total return</th><th>Weight now (drift)</th></tr></thead><tbody>${rows}</tbody></table>
     <div class="sub" style="margin-top:5px">Started equal at ${eqw}% each; with no rebalancing, <b>${topd.symbol}</b> grew into <b>${topd.weight_pct}%</b> of the basket — that concentration is the entire case for, and the hidden risk of, buying and holding forever.</div></div>`:'';
-  const en=fh.entry||{},eh=(en.holdings||[]).slice().sort((a,b)=>b.buy_now-a.buy_now),eo=en.overall||{},ep=en.params||{};
-  const vcol=v=>v==='Accumulate'?'var(--up)':(v==='Expensive'?'var(--down)':'#f5a524');
+  const en=fh.entry||{},eh=(en.holdings||[]).map(h=>feedStale()?{...h,verdict:'WAIT',capped:'Waiting for a fresh snapshot'}:h).sort((a,b)=>b.buy_now-a.buy_now),eo=en.overall||{},ep=en.params||{};
+  const vcol=v=>v==='Accumulate'?'var(--up)':(['Expensive','AVOID'].includes(v)?'var(--down)':'#f5a524');
   const acol2=a=>a==='BUY'?'var(--up)':(a==='SELL'?'var(--down)':'var(--muted)');
   const hcell=ht=>(!ht||!ht.n)?'<span style="color:var(--muted)">—</span>':`<span style="color:${ht.fwd_avg_pct>=0?'var(--up)':'var(--down)'};font-weight:700">${ht.fwd_avg_pct>=0?'+':''}${ht.fwd_avg_pct}%</span> <span style="color:var(--muted)">· ${ht.hit_pct}% pos · n=${(ht.n||0).toLocaleString()}</span>`;
   const vbadge=v=>`<span style="font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:6px;color:#08120b;background:${vcol(v)}">${(v||'—').toUpperCase()}</span>`;
-  const erows=eh.map(h=>`<tr><td><b>${h.symbol}</b></td><td><div style="display:flex;align-items:center;gap:6px">${vbadge(h.verdict)}<span style="color:var(--muted)">${h.buy_now}</span>${h.capped?'<span title="Fast-crash flag is on (−12%/10d or −18%/1mo) — cheap, but still falling; verdict capped until the flag clears" style="color:#f5a524;font-size:10px;font-weight:800">🔪</span>':''}</div></td><td style="color:${h.vs200_pct<=0?'var(--up)':'var(--muted)'}">${h.vs200_pct>=0?'+':''}${h.vs200_pct}%</td><td style="color:${h.off_high_pct<=-10?'var(--up)':'var(--muted)'}">${h.off_high_pct}%</td><td style="color:var(--muted)">${h.rsi}</td><td style="color:${acol2(h.live_action)};font-weight:700">${h.live_action||'—'}${h.live_strength?' '+h.live_strength+'%':''}</td><td>${hcell(h.hist_today)}</td></tr>`).join('');
+  const erows=eh.map(h=>`<tr><td><b>${h.symbol}</b></td><td><div style="display:flex;align-items:center;gap:6px">${vbadge(h.verdict)}<span style="color:var(--muted)">${h.buy_now}</span>${h.capped?'<span title="${esc(h.capped)}" style="color:#f5a524;font-size:10px;font-weight:800">🔪</span>':''}</div></td><td style="color:${h.vs200_pct<=0?'var(--up)':'var(--muted)'}">${h.vs200_pct>=0?'+':''}${h.vs200_pct}%</td><td style="color:${h.off_high_pct<=-10?'var(--up)':'var(--muted)'}">${h.off_high_pct}%</td><td style="color:var(--muted)">${h.rsi}</td><td style="color:${acol2(h.live_action)};font-weight:700">${h.live_action||'—'}${h.live_strength?' '+h.live_strength+'/100':''}</td><td>${hcell(h.hist_today)}</td></tr>`).join('');
   const entryBlock=eh.length?`<div style="margin:12px 0 2px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
     <div style="font-size:11.5px;font-weight:800">🟢 Buy now? — is today a good moment to add <span style="font-weight:400;color:var(--muted)">(blend: ${Math.round((ep.w_dip||.6)*100)}% cheapness + ${Math.round((ep.w_live||.4)*100)}% live — calibrated 1mo/1yr band up-odds when history allows)</span></div>
-    <div style="font-size:11px">Basket: ${vbadge(eo.verdict)} <span style="color:var(--muted)">${eo.buy_now!=null?'('+eo.buy_now+') ':''}· ${eo.n_accumulate||0}/${eo.n_total||eh.length} on sale</span></div></div>
+    <div style="font-size:11px">Basket: ${vbadge(feedStale()?'WAIT':eo.verdict)} <span style="color:var(--muted)">${eo.buy_now!=null?'('+eo.buy_now+') ':''}· ${eo.n_accumulate||0}/${eo.n_total||eh.length} on sale</span></div></div>
     <table class="tr"><thead><tr><th>Holding</th><th>Buy now?</th><th>vs 200-day</th><th>Off 52w high</th><th>RSI</th><th>Live signal</th><th>When this cheap → next 1y</th></tr></thead><tbody>${erows}</tbody>${eo.hist_today&&eo.hist_today.n?`<tfoot><tr style="border-top:1px solid var(--line)"><td colspan="6" style="color:var(--muted)">Whole basket — when it was this cheap (${eo.dip_band}), the next year averaged</td><td>${hcell(eo.hist_today)}</td></tr></tfoot>`:''}</table>
     <div class="sub" style="margin-top:4px">"Cheapness" rewards a name trading below its own 200-day trend, far off its 52-week high, with a low RSI; the live signal is the same macro-aware BUY/SELL the watchlist shows. <b>History is the price-only forward return from that valuation</b> (no macro overlay), graded ${ep.fwd_days||252} trading days out — context, not a promise. For a forever holding, time in the market beats timing this; it just flags better vs worse moments to add.</div></div>`:'';
-  const accN=(eh||[]).filter(h=>h.verdict==='Accumulate');const dn=doNext(accN.length?`<b>Add to ${accN.length} name${accN.length>1?'s':''} on sale:</b> ${accN.slice(0,8).map(h=>h.symbol).join(', ')}${accN.length>8?'…':''} <span style="color:var(--muted);font-weight:400">— keep DCAing the rest; next rebalance ${meta.next_rebalance||'—'}</span>`:`<b>Hold &amp; keep DCAing</b> — nothing is clearly on sale (basket ${eo.verdict||'—'}); next rebalance ${meta.next_rebalance||'—'}.`, accN.length?'buy':'hold');
+  const accN=(eh||[]).filter(h=>h.verdict==='Accumulate');const dn=doNext(accN.length?`<b>Add to ${accN.length} name${accN.length>1?'s':''} on sale:</b> ${accN.slice(0,8).map(h=>h.symbol).join(', ')}${accN.length>8?'…':''} <span style="color:var(--muted);font-weight:400">— keep DCAing the rest; next rebalance ${meta.next_rebalance||'—'}</span>`:`<b>Wait before adding</b> — no holdings pass both the entry and valuation checks (basket ${eo.verdict||'—'}); next rebalance ${meta.next_rebalance||'—'}.`, accN.length?'buy':'hold');
   box.innerHTML=`${dn}<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><div class="section-title" style="margin:0">💎 Buy & Hold Forever — watchlist's durable names, never timed</div><div style="display:flex;gap:5px;flex-wrap:wrap">${zbt('1y')}${zbt('2y')}${zbt('5y')}${zbt('max')}</div></div>
     <div class="sub">${meta.strategy||''} Showing ${dates[0]} → ${dates[dates.length-1]} (log scale; headline figures are lifetime since ${meta.since}).</div>
     ${basketBlock}
@@ -852,12 +892,13 @@ function renderCrashRadar(){
 }
 function renderTopCalls(){
   const x=st.data&&st.data.top_calls,box=$('topCalls');if(!box)return;
+  if(feedStale()){box.innerHTML='<div class="empty">Top calls paused while the data feed is stale.</div>';return;}
   if(!x||!x.top||!x.top.length){box.innerHTML='';return;}
   const ac=a=>a==='BUY'?'var(--buy)':(a==='SELL'?'var(--down)':'var(--hold)');
-  const cards=x.top.map((t,i)=>`<div style="flex:1;min-width:210px;display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-left:5px solid ${ac(t.action)};border-radius:10px;padding:9px 13px"><span style="font-size:11px;color:var(--muted);font-weight:700">#${i+1}</span><span style="font-size:18px;font-weight:800">${t.symbol}</span><span style="font-size:14px;font-weight:800;color:${ac(t.action)}">${t.action}</span><span style="font-size:11px;color:var(--muted)" title="${t.conf_basis==='hist'?'Calibrated: historical hit-rate of this signal band (~10y, 1-month horizon)':'Signal strength (no calibration history for this name)'}">${t.confidence}% conf${t.conf_basis==='hist'?'·hist':''}</span><span style="margin-left:auto;font-size:13px">$${t.price}${t.change_pct!=null?` <span style="color:${t.change_pct>=0?'var(--up)':'var(--down)'}">${t.change_pct>=0?'+':''}${(+t.change_pct).toFixed(1)}%</span>`:''}</span></div>`).join('');
+  const cards=x.top.map((t,i)=>`<div style="flex:1;min-width:210px;display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-left:5px solid ${ac(t.action)};border-radius:10px;padding:9px 13px"><span style="font-size:11px;color:var(--muted);font-weight:700">#${i+1}</span><span style="font-size:18px;font-weight:800">${t.symbol}</span><span style="font-size:14px;font-weight:800;color:${ac(t.action)}">${t.action}</span><span style="font-size:11px;color:var(--muted)" title="Adjusted model rating or signal strength; not a probability of profit">${t.confidence}/100 rating</span><span style="margin-left:auto;font-size:13px">$${t.price}${t.change_pct!=null?` <span style="color:${t.change_pct>=0?'var(--up)':'var(--down)'}">${t.change_pct>=0?'+':''}${(+t.change_pct).toFixed(1)}%</span>`:''}</span></div>`).join('');
   const s=x.scorecard||{};
   const rep=s.graded?`📊 Model report card: <b style="color:${s.hit_rate>=50?'var(--up)':'var(--down)'}">${s.hit_rate}%</b> of <b>${s.graded}</b> graded calls were right (${s.horizon_days}-day outcome) · avg <b style="color:${s.avg_aligned_return>=0?'var(--up)':'var(--down)'}">${s.avg_aligned_return>=0?'+':''}${s.avg_aligned_return}%</b> if followed · ${s.open} pending`:`📊 Model report card: building a live track record — ${s.open||0} call(s) logged, first grades appear after ~${s.horizon_days||14} days`;
-  box.innerHTML=`<div style="background:var(--card-grad);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)"><div style="font-size:14px;font-weight:800;margin-bottom:9px">⭐ Top Calls — Buy / Hold / Sell <span style="font-size:11px;color:var(--muted);font-weight:500">· live, updates every refresh</span></div><div style="display:flex;gap:10px;flex-wrap:wrap">${cards}</div><div style="font-size:11px;color:var(--muted);margin-top:9px">${rep} <span style="opacity:.7">— logged daily &amp; graded forward to improve the model. Not advice.</span></div></div>`;
+  box.innerHTML=`<div style="background:var(--card-grad);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)"><div style="font-size:14px;font-weight:800;margin-bottom:9px">⭐ Trend Calls — Buy / Hold / Sell <span style="font-size:11px;color:var(--muted);font-weight:500">· trend signals; use entry checks above for purchases</span></div><div style="display:flex;gap:10px;flex-wrap:wrap">${cards}</div><div style="font-size:11px;color:var(--muted);margin-top:9px">${rep} <span style="opacity:.7">— logged daily &amp; graded forward to improve the model. Not advice.</span></div></div>`;
 }
 function renderInsider(){
   const x=st.data&&st.data.insiders,box=$('insiderCard');if(!box)return;
@@ -924,11 +965,13 @@ $('refreshBtn').addEventListener('click',async()=>{$('refreshBtn').textContent='
 async function fetchData(){
   if(!st.loadStart)st.loadStart=Date.now();
   try{const r=await fetch('/api/data',{cache:'no-store'});
-    if(r.status===503){if(!st.data)renderLoad();setTimeout(fetchData,1500);return;}
-    const j=await r.json();if(j.error){if(!st.data)renderLoad();setTimeout(fetchData,1500);return;}
-    st.data=j;st.nextAt=Date.now()+POLL_MS;render();
-  }catch(e){if(!st.data){renderLoad();setTimeout(fetchData,2000);}}
+    if(!r.ok)throw new Error('Data request failed: '+r.status);
+    const j=await r.json();if(j.error)throw new Error(j.error);
+    if(!j.session||!Array.isArray(j.watchlist)||!Number.isFinite(j.updated_at))throw new Error('Incomplete snapshot');
+    st.data=j;st.fetchError=false;st.nextAt=Date.now()+POLL_MS;render();
+  }catch(e){st.fetchError=true;if(st.data){render();}else{renderLoad();$('feedWarning').style.display='block';$('feedWarning').textContent='Waiting for the data feed. Retrying automatically…';}}
 }
+$('entryFilter').addEventListener('change',renderPurchases);
 // ---- tab navigation ----
 function switchTab(id){
   document.querySelectorAll('.tabpane').forEach(p=>p.classList.toggle('active',p.id===id));
@@ -946,5 +989,8 @@ setInterval(fetchData,POLL_MS);fetchData();
 </body>
 </html>
 """
+
+from telemetry_ui import enhance_dashboard
+INDEX_HTML = enhance_dashboard(INDEX_HTML)
 
 # --- end of dashboard_ui.py ---

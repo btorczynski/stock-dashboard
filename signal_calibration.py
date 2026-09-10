@@ -32,6 +32,7 @@ import os
 import numpy as np
 import pandas as pd
 import yfinance as yf
+from entry_rules import rsi as _rsi
 
 STATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "signal_calibration_state.json")
 PERIOD = "10y"
@@ -40,27 +41,19 @@ LT_H = 252           # ~1 year   — used by the forever-hold entry blend
 FLAT_BAND = 0.05     # HOLD counts as "right" if |21d move| <= 5%
 M0 = 60              # empirical-Bayes prior weight (pseudo-samples of pooled rate)
 MIN_OWN = 120        # band samples needed before the estimate counts as "own"
-SCHEMA = 1
+SCHEMA = 2  # neutral RSI, 200-day minimum, integer bands, persistent bear cap
 
 # Score bands (mirror SIGNAL_BUY=25 / SIGNAL_SELL=-25 in stock_dashboard.py)
-BANDS = [("strong_sell", -101, -60), ("sell", -60, -25), ("hold", -25, 25),
+BANDS = [("strong_sell", -101, -60), ("sell", -60, -24), ("hold", -24, 25),
          ("buy", 25, 60), ("strong_buy", 60, 101)]
 
 
 def band_of(score):
-    s = float(score or 0)
+    s = round(float(score or 0))
     for name, lo, hi in BANDS:
         if lo <= s < hi:
             return name
     return "strong_buy" if s >= 60 else "strong_sell"
-
-
-def _rsi(s, period=14):
-    d = s.diff()
-    up, dn = d.clip(lower=0), -d.clip(upper=0)
-    ru = up.ewm(alpha=1 / period, adjust=False).mean()
-    rd = dn.ewm(alpha=1 / period, adjust=False).mean()
-    return 100 - 100 / (1 + ru / rd.replace(0, 1e-9))
 
 
 def hist_scores(c):
@@ -88,7 +81,8 @@ def hist_scores(c):
     raw = pd.Series(np.where(spike, raw * 0.6, raw), index=c.index)
     crash = (ret10 <= -12) | (mom1m <= -18)
     raw = pd.Series(np.where(crash, np.minimum(raw, -40.0), raw), index=c.index)       # fast-crash override
-    return raw.clip(-100, 100).where(sma50.notna())
+    raw = raw.where(offh > -20, raw.clip(upper=24))
+    return raw.clip(-100, 100).round().where(sma200.notna())
 
 
 def _fetch(tickers):
@@ -218,6 +212,8 @@ def ensure(daily, tickers):
             except Exception:
                 pass
     state = load_state()
+    if state and state.get("meta", {}).get("schema") != SCHEMA:
+        state = None  # incompatible scores must not silently reuse old hit rates
     fresh = (state and state.get("tickers") and latest
              and state.get("meta", {}).get("seeded_through") == latest
              and state.get("meta", {}).get("schema") == SCHEMA)

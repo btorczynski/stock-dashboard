@@ -17,13 +17,14 @@ import json
 import os
 import sys
 import time
+from entry_rules import validate_snapshot
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
 
 
 def _write(path, text, binary=False):
     mode = "wb" if binary else "w"
-    with open(path, mode) as f:
+    with open(path, mode, **({} if binary else {"encoding": "utf-8"})) as f:
         f.write(text)
 
 
@@ -46,10 +47,10 @@ def main():
 
     # 1) Build the snapshot — identical payload to what /api/data serves live.
     print("building snapshot (fetching quotes + running backtests)…", flush=True)
-    data = sd.build_snapshot()
+    data = validate_snapshot(sd.build_snapshot())
     data["_static"] = {"built_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                        "build_seconds": round(time.time() - t0, 1)}
-    payload = json.dumps(data, separators=(",", ":"))
+    payload = json.dumps(data, separators=(",", ":"), allow_nan=False)
     _write(os.path.join(OUT, "data.json"), payload)
 
     # 2) Static page = the real UI, with its data source repointed and the
