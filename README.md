@@ -21,10 +21,22 @@ by sector; its rotation is a visual layout, not an additional trading signal.
 The same `/api/data` snapshot powers every panel through its `telemetry` field.
 No separate data service or browser charting dependency is required.
 
-The network now shows incoming volume streaks that fly toward the corresponding
-stock node and create a landing pulse. Each streak is one completed one-minute
-OHLCV bar, labeled with its reported share volume. Green/red reflects that bar's
-price direction; this API does not expose individual trades or aggressor side.
+The network shows share-volume packets flying toward each stock node. At the
+default scale, one full projectile represents 10,000 shares: a 100,000-share
+minute produces ten, while a 10,000-share minute produces one. Smaller partial
+packets preserve remaining shares. Heavy batches use a larger shared scale,
+shown above the sphere, so the busiest stocks are not silently clipped. Total
+represented shares match the original bars; packets are not individual trades.
+Green/red indicates the minute's price direction, not buyer/seller aggressor side.
+
+Node size and amber halos highlight volume relative to the preceding 20 minutes
+for that stock (at least 10 observed bars, without crossing regular/extended
+session boundaries). An amber halo means at least 2× that baseline. The surge
+watch shows these ratios beside the minute's price move. The volume balance
+compares only bars with the same latest timestamp and states stock coverage;
+it is tracked-stock activity, not a market-wide buying/selling measure. Missing
+baselines stay unavailable. This short-window comparison is not a historical
+same-time-of-day seasonal volume model or an independently validated entry signal.
 Repeated snapshots and revised bars do not create duplicate arrivals. The queue
 waits until the sphere is on-screen, and pauses playback while scrolled away or
 in a hidden tab. Fresh arrivals resume when visible; expired live records are
@@ -59,8 +71,9 @@ node --test test_network_flow.js  # optional local JS regression check; also run
 
 The second command replays cached inputs. Downloads and intermediate results
 stay in `validation/`; these commands do not write simulator state. The offline
-Python suite below now contains 60 regression, evaluation-harness and chart-data
-checks; the JavaScript suite adds 13 activity-deduplication, visibility and playback checks.
+Python suite below contains 63 regression, evaluation-harness and chart-data
+checks; the 19 JavaScript checks include volume conservation, packet density,
+matching timestamps and visibility handling (82 total).
 
 ## Entry checks and regression testing (September 2026)
 

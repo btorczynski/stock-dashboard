@@ -72,3 +72,41 @@ test('live batch is spread across the refresh interval without duplicating bars'
   assert.ok(pending.at(-1).start>49000);
   assert.ok(pending.at(-1).start+pending.at(-1).duration<55000);
 });
+
+test('ten times the shares produces ten times the full-size projectiles', () => {
+  const batch=flow.volumeSchedule([bar('A','01',10000),bar('B','01',100000)],1000);
+  assert.equal(batch.unit,10000);
+  assert.equal(batch.pulses.filter(p=>p.symbol==='A').length,1);
+  assert.equal(batch.pulses.filter(p=>p.symbol==='B').length,10);
+});
+test('partial projectiles conserve the exact reported share volume', () => {
+  const events=[bar('A','01',25001),bar('B','01',1234)];
+  const batch=flow.volumeSchedule(events,1000);
+  for(const e of events)assert.equal(batch.pulses.filter(p=>p.symbol===e.symbol).reduce((n,p)=>n+p.representedShares,0),e.volume);
+  assert.equal(batch.pulses.filter(p=>p.symbol==='A').at(-1).representedShares,5001);
+});
+test('busy batches use one disclosed scale without clipping the largest stock', () => {
+  const batch=flow.volumeSchedule(Array.from({length:120},(_,i)=>bar('S'+i,'01',1e8)),1000);
+  assert.ok(batch.unit>10000);
+  assert.ok(batch.pulses.length<=800);
+  assert.equal(new Set(batch.pulses.map(p=>p.unit)).size,1);
+  assert.equal(batch.pulses.reduce((n,p)=>n+p.representedShares,0),batch.total);
+});
+test('higher volume raises density across the playback window', () => {
+  const batch=flow.volumeSchedule([bar('A','01',100000)],1000,50000);
+  assert.equal(batch.pulses.length,10);
+  assert.ok(batch.pulses[0].start<5000);
+  assert.ok(batch.pulses.at(-1).start>45000);
+});
+test('activity summary aligns timestamps instead of mixing different minutes', () => {
+  const a={...bar('A','00',900000),volume_ratio:9};
+  const b={...bar('B','01',10000),volume_ratio:3};
+  const c={...bar('C','01',30000),close:99,volume_ratio:1};
+  const s=flow.activitySummary([a,b,c]);
+  assert.equal(s.count,2);assert.equal(s.total,40000);assert.equal(s.rising,10000);
+  assert.equal(s.falling,30000);assert.equal(s.surges,1);assert.equal(s.leaders[0].symbol,'B');
+});
+test('missing baselines do not become zero-volume or surge claims', () => {
+  const s=flow.activitySummary([bar()]);
+  assert.equal(s.baselineCount,0);assert.equal(s.surges,0);assert.deepEqual(s.leaders,[]);
+});

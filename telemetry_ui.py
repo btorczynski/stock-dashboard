@@ -22,6 +22,7 @@ CSS = r'''
 .ld-validation{margin:0 13px 12px;padding:10px;border:1px solid #70542b;border-radius:6px;background:#241d13;color:#e6c081;font-size:11px;line-height:1.5}
 #marketNetwork{display:block;width:100%;height:300px;max-width:100%;touch-action:pan-y}.ld-network-foot{padding:0 12px 12px;color:#829bad;font-size:10px;display:flex;justify-content:space-between}
 .ld-flow-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;background:#0c1c2b;color:#72d9ee;font:10px ui-monospace,monospace}.ld-flow-toolbar button{border:1px solid #35576b;border-radius:4px;background:#102a3b;color:#c6edf7;padding:5px 8px;font-size:10px;cursor:pointer}.ld-flow-toolbar button:disabled{opacity:.45;cursor:default}.ld-flow-feed{margin:0 12px 10px;padding:8px 9px;border:1px solid #1d3547;border-radius:5px;min-height:38px;color:#9fc2d9;font:10px/1.7 ui-monospace,monospace}.ld-flow-feed b{color:#e1f6ff}.ld-flow-footer{font-size:10px;color:#839bab;padding:0 12px 12px;line-height:1.5}
+.ld-volume-scale{padding:7px 12px;background:#102432;color:#afdfe8;font:10px/1.5 ui-monospace,monospace}.ld-volume-context{padding:0 12px 12px}.ld-volume-summary{display:flex;justify-content:space-between;gap:10px;color:#a0bbcd;font-size:11px;line-height:1.6}.ld-volume-summary b{display:block;color:#e6f4ff;font:700 19px ui-monospace,monospace}.ld-flow-balance{height:6px;display:flex;overflow:hidden;border-radius:3px;margin:9px 0 5px;background:#243849}.ld-volume-leaders{display:grid;gap:5px;margin-top:10px}.ld-volume-leader{display:grid;grid-template-columns:56px 1fr 52px 58px;align-items:center;gap:6px;font:10px ui-monospace,monospace;color:#acd0e4}.ld-volume-leader i{height:4px;background:#e8c173;display:block;max-width:100%}.ld-volume-leader b{color:#ecf6ff}.ld-volume-heading{display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-size:10px;color:#a4bfd1}
 .ld-heatgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;padding:12px}.ld-heat{border:1px solid #38524f;border-radius:5px;min-height:75px;cursor:pointer;text-align:left;color:#eef6f4;padding:8px;background:#142932}.ld-heat b{font:700 15px ui-monospace,monospace;display:block;margin:7px 0 4px}.ld-heat span{font-size:10px;display:block;color:#d0dfdf}.ld-heat.active{outline:2px solid #8dfff0;outline-offset:1px}
 .ld-rows{padding:5px 12px}.ld-row{display:grid;grid-template-columns:60px 1fr 80px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #1d2e3d;font:11px ui-monospace,monospace}.ld-meter{height:5px;background:#192d3c;border-radius:3px;overflow:hidden}.ld-meter i{display:block;height:100%;background:#57bddc}.ld-volume svg{display:block;width:100%;height:145px}.ld-mini-note{padding:0 13px 12px;font-size:10px;line-height:1.5;color:#849eb2}
 @media(max-width:850px){.ld-chart,.ld-volume{grid-column:span 8}.ld-readout,.ld-events{grid-column:span 4}.ld-network,.ld-sectors{grid-column:span 6}.ld-heatgrid{grid-template-columns:repeat(3,minmax(0,1fr))}.ld-price{font-size:24px}}
@@ -36,7 +37,7 @@ HTML = r'''
   <div class="live-grid">
     <div class="ld-panel ld-chart"><div class="ld-title"><span>PRICE ACTION <select id="liveSymbol" aria-label="Chart symbol"></select></span><div class="ld-controls"><button data-live-range="intraday" class="on">1M BARS</button><button data-live-range="daily">6 MONTHS</button></div></div><div id="livePriceChart"></div></div>
     <div class="ld-panel ld-readout"><div class="ld-title">ENTRY CONDITIONS <span id="liveEntryLabel">WAIT</span></div><div id="liveReadout"></div><div class="ld-validation"><b>Timing edge not established</b><br>Price/sector rule tests did not show consistent improvement over ordinary entries. Full live overlays remain unvalidated. BUY means the entry rules pass.</div></div>
-    <div class="ld-panel ld-network"><div class="ld-title">MARKET NETWORK <span id="liveNodeCount"></span></div><div class="ld-flow-toolbar"><span id="networkFlowStatus">WAITING FOR VOLUME UPDATES</span><button id="networkReplay" disabled>Replay recent activity</button></div><canvas id="marketNetwork" aria-label="Rotating stock network with incoming volume bars and landing pulses" role="img"></canvas><div class="ld-network-foot"><span>Nodes: daily change / relative volume</span><span>Drag to rotate</span></div><div id="networkFlowFeed" class="ld-flow-feed">No incoming activity yet.</div><div class="ld-flow-footer">Each streak represents one completed minute of reported share volume. Streak color: price rose / fell during that bar, not buyer / seller direction. This feed does not provide individual trades.</div></div>
+    <div class="ld-panel ld-network"><div class="ld-title">MARKET ACTIVITY <span id="liveNodeCount"></span></div><div class="ld-flow-toolbar"><span id="networkFlowStatus">WAITING FOR VOLUME UPDATES</span><button id="networkReplay" disabled>Replay recent activity</button></div><div id="networkVolumeScale" class="ld-volume-scale">Density = shares · full projectile = 10,000 shares</div><canvas id="marketNetwork" aria-label="Volume-weighted stock sphere: denser projectiles mean more reported shares; amber node halos mark volume surges" role="img"></canvas><div class="ld-network-foot"><span>Node size: volume surge · amber: ≥2×</span><span>Drag to rotate</span></div><div id="networkVolumeContext" class="ld-volume-context"></div><div id="networkFlowFeed" class="ld-flow-feed">No incoming activity yet.</div><div class="ld-flow-footer">Green/red = price rose/fell during the minute, not buyer/seller direction. A projectile is a share-volume packet, not an individual trade. Surge compares with the preceding 20 minutes in the same session (at least 10 bars). Activity is context, not a buy signal.</div></div>
     <div class="ld-panel ld-sectors"><div class="ld-title">SECTOR HEATMAP <span id="liveBreadth"></span></div><div id="liveHeatmap" class="ld-heatgrid"></div><div class="ld-mini-note">Select a sector to inspect its price and volume. Gray cells indicate unavailable data.</div></div>
     <div class="ld-panel ld-volume"><div class="ld-title">VOLUME BY BAR <span id="liveVolumePeriod"></span></div><div id="liveVolumeChart"></div><div class="ld-mini-note" id="liveChartTime"></div></div>
     <div class="ld-panel ld-events"><div class="ld-title">RELATIVE VOLUME <span>WATCHLIST</span></div><div class="ld-rows" id="liveActivity"></div><div class="ld-mini-note">Volume reflects reported activity, not buy/sell order flow.</div></div>
@@ -46,7 +47,7 @@ HTML = r'''
 
 JS = r'''
 const liveDesk={symbol:'VOO',range:'intraday',angle:0,drag:false,lastX:0,raf:0,lastFrame:0};
-const networkFlow={tracker:NetworkFlow.create(),pulses:[],mode:'live',recent:[],count:0,uiAt:0,pausedAt:null};
+const networkFlow={tracker:NetworkFlow.create(),pulses:[],mode:'live',recent:[],count:0,uiAt:0,pausedAt:null,unit:10000,nodeActivity:new Map()};
 function liveTone(n){return n==null?'#718799':n>=0?'#43dfac':'#fa6a80';}
 function liveBars(){const series=st.data?.telemetry?.series?.[liveDesk.symbol];return series?.[liveDesk.range]||[];}
 function liveFmtTime(t){if(!t)return '—';return t.includes('T')?quoteTime(t):t;}
@@ -111,12 +112,16 @@ function flowVisible(){
   return !!rect&&rect.top<innerHeight-40&&rect.bottom>100&&$('tab-live')?.classList.contains('active')&&!document.hidden;
 }
 function ingestNetworkFlow(){
+  networkFlow.nodeActivity=new Map(flowEvents().map(e=>[e.symbol,e]));
+  renderVolumeContext();
   const paused=feedStale()||st.data?.session?.state==='closed';
   const events=NetworkFlow.ingest(networkFlow.tracker,flowEvents(),Number(st.data?.updated_at)*1000,Date.now(),paused,flowVisible());
   if(paused&&networkFlow.mode==='live')networkFlow.pulses=[];
   if(feedStale()){networkFlow.pulses=[];networkFlow.mode='live';}
   if(networkFlow.mode==='live'&&events.length){
-    networkFlow.pulses=networkFlow.pulses.concat(NetworkFlow.schedule(events,performance.now(),50000)).slice(-240);
+    const batch=NetworkFlow.volumeSchedule(events,performance.now(),50000);
+    networkFlow.unit=batch.unit;
+    networkFlow.pulses=networkFlow.pulses.filter(p=>performance.now()<p.start+p.duration+900).concat(batch.pulses);
     networkFlow.recent=events.slice(-3).reverse();networkFlow.count=events.length;
   }
   renderNetworkFlowStatus();
@@ -125,12 +130,24 @@ function renderNetworkFlowStatus(){
   const status=$('networkFlowStatus'),replay=$('networkReplay');if(!status)return;
   const stale=feedStale(),replaying=networkFlow.mode==='replay',closed=st.data?.session?.state==='closed';
   const pending=networkFlow.pulses.length;
-  status.textContent=stale?'FLOW PAUSED · STALE DATA':replaying?(pending?'REPLAY · RECORDED VOLUME':'REPLAY COMPLETE'):closed?'MARKET CLOSED · FLOW IDLE':pending?'INCOMING VOLUME · '+pending+' BARS':'LISTENING FOR NEW VOLUME';
+  status.textContent=stale?'FLOW PAUSED · STALE DATA':replaying?(pending?'REPLAY · RECORDED VOLUME':'REPLAY COMPLETE'):closed?'MARKET CLOSED · FLOW IDLE':pending?'VOLUME FLOW · '+pending+' PACKETS':'LISTENING FOR NEW VOLUME';
   status.style.color=replaying?'#eac079':stale?'#e9b963':'#72d9ee';
   replay.textContent=replaying?'Return to live':'Replay recent activity';
   replay.disabled=stale||(!replaying&&!flowEvents().length);
   const latest=flowEvents().at(-1)?.t;
+  const units=[...new Set(networkFlow.pulses.map(p=>p.unit))].filter(Number.isFinite).sort((a,b)=>a-b);
+  const scale=units.length>1?units.map(u=>Number(u).toLocaleString()).join(' / '):Number(units[0]||networkFlow.unit).toLocaleString();
+  $('networkVolumeScale').textContent='Full projectile = '+scale+' shares · smaller = partial'+(units.length>1?' · overlapping batch scales':'');
   $('networkFlowFeed').innerHTML=networkFlow.recent.length?`${replaying?'RECORDED':'LATEST RECEIVED'} · ${networkFlow.count} volume bars<br>`+networkFlow.recent.map(e=>`<b>${esc(e.symbol)}</b> ${Number(e.volume).toLocaleString()} shares · ${esc(liveFmtTime(e.t))}`).join('<br>'):(closed?'No active flow while markets are closed. Replay the latest recorded bars above.':'Waiting for fresh volume.'+(latest?' Latest available bar: '+esc(liveFmtTime(latest))+'.':''));
+}
+function renderVolumeContext(){
+  const box=$('networkVolumeContext');if(!box)return;
+  const summary=NetworkFlow.activitySummary(flowEvents());
+  if(!summary.count){box.innerHTML='<div class="ld-muted">No completed volume bars available.</div>';return;}
+  const total=summary.total||1,up=summary.rising/total*100,down=summary.falling/total*100;
+  const stale=feedStale()||Date.now()-Date.parse(summary.time)>180000;
+  const largest=Math.max(2,...summary.leaders.map(e=>e.volume_ratio));
+  box.innerHTML=`<div class="ld-volume-summary"><span>Latest minute · ${summary.count} tracked stocks<b>${Number(summary.total).toLocaleString()} shares</b></span><span>≥2× volume<b>${summary.baselineCount?summary.surges+' / '+summary.baselineCount:'—'}</b></span></div><div class="ld-muted">${stale?'Historical / delayed · ':''}${esc(liveFmtTime(summary.time))} · aligned bar timestamps</div><div class="ld-flow-balance"><span style="width:${up}%;background:#43dfac"></span><span style="width:${down}%;background:#fa6a80"></span><span style="flex:1;background:#70d6f5"></span></div><div class="ld-muted">${up.toFixed(0)}% of shares in rising-price bars · ${down.toFixed(0)}% in falling-price bars</div><div class="ld-volume-heading"><b>VOLUME SURGE WATCH</b><span>vs prior 20 min · price Δ</span></div><div class="ld-volume-leaders">${summary.leaders.map(e=>`<div class="ld-volume-leader"><b>${esc(e.symbol)}</b><span><i style="width:${e.volume_ratio/largest*100}%;background:${e.volume_ratio>=2?'#e8c173':'#497c96'}"></i></span><span>${e.volume_ratio.toFixed(1)}×</span><span style="color:${liveTone(e.close-e.open)}">${fmtPct((e.close/e.open-1)*100)}</span></div>`).join('')||'<div class="ld-muted">Insufficient preceding-minute history for a surge comparison.</div>'}</div>`;
 }
 function toggleNetworkReplay(){
   if(feedStale())return;
@@ -140,7 +157,9 @@ function toggleNetworkReplay(){
     const events=NetworkFlow.replay(flowEvents());
     networkFlow.mode='replay';networkFlow.count=events.length;
     networkFlow.recent=events.slice(-3).reverse();
-    networkFlow.pulses=matchMedia('(prefers-reduced-motion: reduce)').matches?[]:NetworkFlow.schedule(events,performance.now());
+    const batch=NetworkFlow.volumeSchedule(events,performance.now(),16000);
+    networkFlow.unit=batch.unit;
+    networkFlow.pulses=matchMedia('(prefers-reduced-motion: reduce)').matches?[]:batch.pulses;
   }
   renderNetworkFlowStatus();drawMarketNetwork();
 }
@@ -160,15 +179,16 @@ function drawIncomingVolume(ctx,projected,W,H,now,motion){
       // A curved light trail follows the current position of the rotating node.
       for(let j=0;j<10;j++){
         const u=Math.max(0,t-j*.018),a=point(u),b=point(Math.max(0,u-.02));
-        ctx.globalAlpha=(1-j/10)*.8;ctx.lineWidth=1.5+(1-j/10)*1.5;
+        const fraction=Math.max(.08,p.representedShares/p.unit);
+        ctx.globalAlpha=(1-j/10)*(.35+.45*fraction);ctx.lineWidth=(1.5+(1-j/10)*1.5)*Math.sqrt(fraction);
         ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(a.x,a.y);ctx.stroke();
       }
       const head=point(t);ctx.globalAlpha=1;ctx.shadowBlur=12;ctx.shadowColor=color;
-      ctx.beginPath();ctx.arc(head.x,head.y,2+Math.min(3,Math.log10(p.volume+1)*.35),0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
-      if(p.ordinal%3===0){
+      ctx.beginPath();ctx.arc(head.x,head.y,Math.max(1,3.8*Math.sqrt(p.representedShares/p.unit)),0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+      if(p.fragment===0&&p.ordinal%3===0){
         const shares=p.volume>=1e6?(p.volume/1e6).toFixed(1)+'m':p.volume>=1000?(p.volume/1000).toFixed(1)+'k':p.volume;
         ctx.font='9px ui-monospace,monospace';ctx.fillStyle='#e5f5ff';ctx.textAlign=side<0?'left':'right';
-        ctx.fillText(p.symbol+' '+shares+' sh',Math.max(8,Math.min(W-8,head.x)),Math.max(12,head.y-9));ctx.textAlign='left';
+        ctx.fillText(p.symbol+' '+shares+'/min',Math.max(8,Math.min(W-8,head.x)),Math.max(12,head.y-9));ctx.textAlign='left';
       }
     }else{
       const fade=(now-p.start-p.duration)/900;ctx.globalAlpha=(1-fade)*.95;ctx.lineWidth=2;
@@ -197,10 +217,10 @@ function drawMarketNetwork(now=performance.now()){
       const nodes=(st.data?.telemetry?.nodes||[]),cx=W*.5,cy=H*.5,R=Math.min(W,H)*.39;
       const glow=ctx.createRadialGradient(cx,cy,4,cx,cy,R*1.3);glow.addColorStop(0,'#12324c');glow.addColorStop(.75,'#0b1a2b');glow.addColorStop(1,'#080f19');ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
       ctx.strokeStyle='#29455a';ctx.lineWidth=.6;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
-      const projected=nodes.map((n,i)=>{const yy=1-2*(i+.5)/nodes.length,rr=Math.sqrt(1-yy*yy),phi=i*2.399963+liveDesk.angle,xx=Math.cos(phi)*rr,zz=Math.sin(phi)*rr;return {...n,x:cx+xx*R,y:cy+yy*R*.95,z:zz,r:2+Math.min(n.rvol||1,4)*1.3};}).sort((a,b)=>a.z-b.z);
+      const projected=nodes.map((n,i)=>{const yy=1-2*(i+.5)/nodes.length,rr=Math.sqrt(1-yy*yy),phi=i*2.399963+liveDesk.angle,xx=Math.cos(phi)*rr,zz=Math.sin(phi)*rr,e=networkFlow.nodeActivity.get(n.symbol),fresh=e&&!feedStale()&&(networkFlow.mode==='replay'||Date.now()-Date.parse(e.t)<=180000),ratio=fresh&&Number.isFinite(e.volume_ratio)?e.volume_ratio:null;return {...n,bar:fresh?e:null,surge:ratio,x:cx+xx*R,y:cy+yy*R*.95,z:zz,r:ratio===null?2.4:2+Math.sqrt(Math.min(ratio,9))*2};}).sort((a,b)=>a.z-b.z);
       projected.forEach((n,i)=>{const alpha=.2+(n.z+1)*.35;ctx.globalAlpha=alpha;ctx.strokeStyle='#335572';ctx.lineWidth=.5;
         projected.slice(i+1).filter(q=>q.sector===n.sector&&Math.hypot(q.x-n.x,q.y-n.y)<R*.9).slice(0,3).forEach(q=>{ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(q.x,q.y);ctx.stroke();});
-        ctx.fillStyle=feedStale()||!['current','close'].includes(n.data_status)?'#77899a':liveTone(n.change_pct);ctx.beginPath();ctx.arc(n.x,n.y,n.r*(.8+(n.z+1)*.25),0,Math.PI*2);ctx.fill();ctx.strokeStyle=ctx.fillStyle;ctx.beginPath();ctx.arc(n.x,n.y,n.r*2.1,0,Math.PI*2);ctx.stroke();
+        ctx.fillStyle=feedStale()||!n.bar?'#77899a':n.bar.close===n.bar.open?'#70d6f5':liveTone(n.bar.close-n.bar.open);ctx.beginPath();ctx.arc(n.x,n.y,n.r*(.8+(n.z+1)*.25),0,Math.PI*2);ctx.fill();ctx.strokeStyle=n.surge>=2?'#e8c173':ctx.fillStyle;ctx.lineWidth=n.surge>=2?1.4:.5;ctx.beginPath();ctx.arc(n.x,n.y,n.r*2.1,0,Math.PI*2);ctx.stroke();
         if(n.z>.5&&i%7===0){ctx.font='9px ui-monospace,monospace';ctx.fillStyle='#bed5e6';ctx.fillText(n.symbol,n.x+9,n.y+3);}
       });ctx.globalAlpha=1;
       if(feedStale()||(!motion&&networkFlow.mode==='live'))networkFlow.pulses=[];

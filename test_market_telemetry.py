@@ -57,6 +57,34 @@ class TelemetryTests(unittest.TestCase):
         frame=data(); frame.index=pd.date_range('2026-09-08',periods=2)
         self.assertEqual(mt.network_activity({'AAPL':frame},[{'symbol':'AAPL'}],datetime.now(timezone.utc))['events'],[])
 
+    def test_volume_surge_uses_only_preceding_minutes(self):
+        frame=pd.concat([data().iloc[:1]]*25,ignore_index=True)
+        frame.index=pd.date_range('2026-09-09 14:30',periods=25,freq='min',tz='UTC')
+        frame.iloc[20,frame.columns.get_loc('Volume')]=4000
+        now=datetime(2026,9,9,14,51,tzinfo=timezone.utc)
+        events=mt.network_activity({'AAPL':frame},[{'symbol':'AAPL'}],now)['events']
+        self.assertEqual(events[-1]['baseline_samples'],20)
+        self.assertEqual(events[-1]['baseline_volume'],1000)
+        self.assertEqual(events[-1]['volume_ratio'],4)
+        frame.iloc[21:,frame.columns.get_loc('Volume')]=1_000_000
+        self.assertEqual(mt.network_activity({'AAPL':frame},[{'symbol':'AAPL'}],now)['events'],events)
+
+    def test_volume_baseline_does_not_cross_market_open(self):
+        frame=pd.concat([data().iloc[:1]]*25,ignore_index=True)
+        frame.index=pd.date_range('2026-09-09 13:10',periods=25,freq='min',tz='UTC')
+        event=mt.network_activity({'AAPL':frame},[{'symbol':'AAPL'}],datetime(2026,9,9,13,35,tzinfo=timezone.utc))['events'][-1]
+        self.assertEqual(event['baseline_samples'],4)
+        self.assertIsNone(event['volume_ratio'])
+
+    def test_zero_baseline_and_missing_minutes_do_not_invent_ratios(self):
+        frame=pd.concat([data().iloc[:1]]*25,ignore_index=True)
+        frame.index=pd.date_range('2026-09-09 14:30',periods=25,freq='min',tz='UTC')
+        frame.iloc[:24,frame.columns.get_loc('Volume')]=0
+        now=datetime(2026,9,9,15,tzinfo=timezone.utc)
+        self.assertIsNone(mt.network_activity({'AAPL':frame},[{'symbol':'AAPL'}],now)['events'][-1]['volume_ratio'])
+        sparse=frame.iloc[::3]
+        self.assertIsNone(mt.network_activity({'AAPL':sparse},[{'symbol':'AAPL'}],now)['events'][-1]['volume_ratio'])
+
     def test_network_activity_includes_sector_stocks_outside_chart_watchlist(self):
         metric={'price':102.,'data_status':'current'}
         sector={'symbol':'XLK','name':'Technology','stocks':[{'symbol':'AAPL','metrics':metric}]}

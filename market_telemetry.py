@@ -1,6 +1,7 @@
 """Compact chart data for the Live Desk, drawn from the same quote snapshot."""
 import math
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from entry_rules import clean_bars
 
 
@@ -28,13 +29,28 @@ def network_activity(intra, nodes, now):
     """Recent completed one-minute bars; Yahoo does not supply trade prints here."""
     events = []
     for node in nodes:
-        for bar in candles(intra.get(node['symbol']), 7):
+        history = []
+        for bar in candles(intra.get(node['symbol']), 28):
             stamp = datetime.fromisoformat(bar['t'])
-            if stamp.tzinfo is None or stamp + timedelta(minutes=1) > now or bar['v'] <= 0:
+            if stamp.tzinfo is None or stamp + timedelta(minutes=1) > now:
                 continue
+            local = stamp.astimezone(ZoneInfo('America/New_York'))
+            minute = local.hour * 60 + local.minute
+            phase = (local.date(), 'pre' if minute < 570 else 'regular' if minute < 960 else 'post')
+            history.append((stamp, phase, bar))
+        for stamp, phase, bar in history[-7:]:
+            if bar['v'] <= 0:
+                continue
+            prior = [b['v'] for t, p, b in history if p == phase and
+                     stamp - timedelta(minutes=20) <= t < stamp]
+            baseline = sum(prior) / len(prior) if len(prior) >= 10 else None
             events.append({'symbol':node['symbol'], 't':bar['t'], 'open':bar['o'],
-                           'close':bar['c'], 'volume':bar['v']})
+                           'close':bar['c'], 'volume':bar['v'],
+                           'baseline_volume':round(baseline,2) if baseline is not None else None,
+                           'baseline_samples':len(prior),
+                           'volume_ratio':round(bar['v']/baseline,4) if baseline else None})
     return {'kind':'volume_bars', 'interval_seconds':60, 'individual_trades':False,
+            'baseline':'Previous 20 minutes in the same session; at least 10 observed bars',
             'events':sorted(events, key=lambda e:(e['t'],e['symbol']))}
 
 
