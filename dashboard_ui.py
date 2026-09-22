@@ -291,8 +291,18 @@ function actBg(a){return a==='BUY'?'rgba(22,163,74,.18)':a==='SELL'?'rgba(220,53
 function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function feedStale(){
   const d=st.data;if(!d)return true;
-  const limit=d._static?1200:(['pre','regular','post'].includes(d.session?.state)?180:900);
-  return !!st.fetchError||!!d.feed_status?.stale||Date.now()/1000-d.updated_at>limit;
+  const age=Date.now()/1000-d.updated_at;
+  if(d._static){
+    // GitHub Pages snapshot: refresh.yml runs */30 12-23 UTC Mon-Fri, and GitHub can delay runs ~1h.
+    // Only call it stale when a scheduled run was actually due and hasn't landed.
+    const n=new Date(),dow=n.getUTCDay(),h=n.getUTCHours(),GRACE=5400;
+    const inWin=dow>=1&&dow<=5&&h>=12;
+    const sinceOpen=(h-12)*3600+n.getUTCMinutes()*60+n.getUTCSeconds();
+    const limit=inWin?(sinceOpen<GRACE?259200:GRACE):259200;  // off-window: allow a full weekend
+    return !!st.fetchError||!!d.feed_status?.stale||age>limit;
+  }
+  const limit=['pre','regular','post'].includes(d.session?.state)?180:900;
+  return !!st.fetchError||!!d.feed_status?.stale||age>limit;
 }
 function purchaseAction(s){return feedStale()?'WAIT':s.entry_action||'WAIT';}
 function entryColor(a){return a==='BUY'?'var(--buy)':a==='AVOID'?'var(--sell)':'var(--hold)';}
